@@ -10,11 +10,12 @@ This work is being done to satisfy the requirements of the [first CSci 5221 prog
 
 [assignment]: http://www-users.cselabs.umn.edu/classes/Spring-2015/csci5221/Project1/csci5221s15-project1-handout.pdf
 
-## Abstract
+## Proposal
+A copy of the proposal we submitted can be found [in docs/](docs/proposal.txt).
+It should also be available [on the class project website](https://sites.google.com/a/umn.edu/csci5221s15/project-1-proposals-and-reports/data-aggregation-analysis-system-for-intelligent-agriculture).
+
+## Design
 (TODO)
-
-
-
 
 ## Related work
 * [OCTOPUS project][octopus] from researchers at WINLAB, Rutgers, The State University of New Jersey
