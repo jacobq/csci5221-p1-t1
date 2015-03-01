@@ -80,7 +80,7 @@
 	types: [{
 		id: 1,
 		name: "Temperature & moisture sensing probe",
-		sensors: [{
+		channels: [{
 			name: "t",
 			description: "Measurement of temperature in hundredths of degrees Celcius",
 			type: "integer"
