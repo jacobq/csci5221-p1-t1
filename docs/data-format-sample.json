@@ -1,26 +1,74 @@
-// Measurement submission
+// Client request for raw sensor data (will get a CSV file)
+{
+	type: "raw",
+	layers: ["temperature", "moisture"],
+	region: {
+		type: "rectangle",
+		topLeft: {
+			x: 0,
+			y: 0
+		},
+		bottomRight: {
+			x: 10,
+			y: 10
+		}
+	},
+	timeSpan: {
+		start: "2015-03-01T06:58:17.922Z",
+		end: "2015-03-01T10:00:00.000Z"
+	}
+}
+
+
+
+
+// Client request for heat map (will get an animation file)
+{
+	type: "heatmap",
+	layers: ["moisture"],
+	region: {
+		type: "rectangle",
+		topLeft: {
+			x: 0,
+			y: 0
+		},
+		bottomRight: {
+			x: 10,
+			y: 10
+		}
+	},
+	timeSpan: {
+		start: "2015-03-01T06:58:17.922Z",
+		end: "2015-03-01T10:00:00.000Z"
+	}
+}
+
+
+
+
+// Measurement submission (sent from sensor data collection point simulator)
 {	
 	devices: [{
 		id: 1,		// id identifies which device generated this data
 		data: [{	// data is an array of time+measurement objects; the array should be sorted by time (earliest first)
 			time: "2015-02-11T18:59:29.729240",
 			t: 2200,
-			h: 2000
+			m: 2000
 		}, {
 			time: "2015-02-11T19:00:03.659181",
 			t: 2201,
-			h: 2000
+			m: 2000
 		}]
 	}, {
 		id: 2,
 		data: [{
 			time: "2015-02-11T18:59:29.729240",
 			t: 2190,
-			h: 2100
+			m: 2100
 		}, {
 			time: "2015-02-11T19:00:03.659181",
 			t: 2189,
-			h: 2090
+			m: 2090
 		}]
 	}]
 }
@@ -31,14 +79,14 @@
 {
 	types: [{
 		id: 1,
-		name: "Temperature & humidity sensing probe",
+		name: "Temperature & moisture sensing probe",
 		sensors: [{
 			name: "t",
 			description: "Measurement of temperature in hundredths of degrees Celcius",
 			type: "integer"
 		}, {
-			name: "h",
-			description: "Measurement of relative humidity in hundredths of percentage points.",
+			name: "m",
+			description: "Measurement of moisture content in hundredths of percentage points.",
 			type: "integer"
 		}]
 	}],
