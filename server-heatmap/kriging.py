@@ -10,7 +10,7 @@ import numpy as np
 from pandas import DataFrame, Series
 from scipy.spatial.distance import pdist, squareform
 
-file_in = r'C:\Users\nikos\Desktop\Networks\ZoneA.dat'
+file_in = r'ZoneA.dat'
 z = open( file_in,'r' ).readlines()
 z = [ i.strip().split() for i in z[10:] ]
 z = np.array( z, dtype=np.float )
