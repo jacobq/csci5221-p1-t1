@@ -6,12 +6,10 @@
 \usepackage{graphicx}
 
 \title{Data Aggregation \& Analysis System for Intelligent Agriculture: Design Document}
-\author[1]{Panagiotis Stanitsas \thanks{stani078@umn.edu}}
+\author[1]{CSci 5221 Team \#1: Panagiotis Stanitsas \thanks{stani078@umn.edu}}
 \author[1]{Jacob Quant \thanks{quant006@umn.edu}}
 \author[1]{Nabil Cheikh  \thanks{cheik004@d.umn.edu}}
-% TODO: Don't forget to put "Team ID 1" somewhere on here
-% TODO: Do you think we should include the course or section number also?
-	
+
 \affil[1]{Department of Computer Science and Engineering, University of Minnesota, Minneapolis, MN 55455 USA}
 
 \renewcommand\Authands{ and }
@@ -21,11 +19,12 @@
 
 \maketitle
 
+
 %\begin{abstract}
 %\end{abstract}
 
 \section{Motivation}
-Over the past decade a great amount of attention has been received in the area of intelligent system development in precision agriculture. Methods along the lines of satellite and drone image processing as well as technologically advanced sensing techniques are deployed in an effort to increase the efficiency of modern crops while optimizing the quantities of the necessary resources (e.g. fertilizers, water).
+Over the past decade a great amount of attention has been received by the area of intelligent systems development in Precision Agriculture. Methods along the lines of satellite and drone image processing as well as technologically advanced sensing tare deployed in an effort to increase the efficiency of modern crops while optimizing the quantities of the necessary resources (e.g. fertilizers, water).
 
 % TODO: Photo credit?
 \begin{wrapfigure}{l}{2.5in}
@@ -38,10 +37,10 @@ Over the past decade a great amount of attention has been received in the area o
    %\vspace{-0.08in}
 \end{wrapfigure}
 
-\noindent Figure \ref{fig:HighLev} illustrates a high-level view of the the multistage structure of modern Precision Agriculture according to which information is aggregated at a central hub, then processed and based on the results, all agents receive a plan of action regarding irrigation, fertilization, harvesting and planting.  Capitalizing on the continuous effort of reducing the associated cost with Precision Agriculture applications, cheap sensing solutions can be implemented in order to provide valuable information even on the farmer's smart phones. In particular, the scenario that this project aims to replicate is the delivery of information, which is harvested in the field, to a mobile device based on user defined queries. Sensors that can measure the humidity of the soil can be purchased at a very low price (\$10 - \$20), while constructing a wireless network
+\noindent Figure \ref{fig:HighLev} illustrates a high-level view of the the multistage structure of modern Precision Agriculture according to which information is aggregated at a central hub, then processed and based on the results, all agents receive a plan of action regarding irrigation, fertilization, harvesting and planting.  Capitalizing on the continuous effort of reducing the associated cost with Precision Agriculture applications, cheap sensing solutions can be implemented in order to provide valuable information even on the farmer's smart phones. In particular, the scenario that this project aims to replicate is the delivery of information, which is harvested in the field, to a mobile device based on user defined queries. Sensors that can measure the humidity of the soil can be purchased at a very low price (\$10 - \$20 per sensor), while constructing a wireless network
 (e.g. ZigBee modules) that is capable of transmitting
 the sensor measurements to a central processing location can be also completed within a constricted budget.
-Figure \ref{fig:Humsens} presents a soil humidity sensor distributed by Hoskin Scientific and has the ability to measure water content and temperature directly within the root zone. Rather than using sophisticated devices to deliver information to the farmer, this effort promotes the use of a phone application user while remaining aligned with the initial goal of keeping the cost as low as possible. In that way, utilizing low-cost sensor measurements, farmers can monitor the humidity (of the soil) and plan accordingly for their irrigation strategies.
+Figure \ref{fig:Humsens} presents a soil humidity sensor distributed by Hoskin Scientific and has the ability to measure water content and temperature directly within the root zone. Rather than using sophisticated devices to deliver information to the farmer, this effort promotes the use of a smart phone application, while remaining aligned with the initial goal of keeping the cost as low as possible. In that way, utilizing low-cost sensor measurements, farmers can monitor the humidity (of the soil) and plan accordingly for their irrigation strategies.
 
 \begin{wrapfigure}{r}{1.8in}
 \begin{center}
@@ -117,7 +116,7 @@ The user may also be able to save the results for later reference.
 
 \begin{figure*}[!htbp]
 \begin{center}
-\begin{tabular}{c c c}
+\begin{tabular}{l c r}
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-home.png}&
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-region.png}&
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-region-dashboard.png}\\
@@ -127,7 +126,7 @@ The user may also be able to save the results for later reference.
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-individual_data.png}&
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-heat-map-request.png}&
 \includegraphics[width=0.25\linewidth]{Images/bare-nexus-5-mockup-screen-heat-map-result.png}\\
-(d) Real-time chart & (e) Heatmap request builder & (f) Heatmap result viewer
+(d) Real-time chart & (e) Heat map request builder & (f) Heat map result viewer
 
 \end{tabular}
 \end{center}
@@ -138,14 +137,111 @@ The user may also be able to save the results for later reference.
  
 
 \section{Application Server}
+The application server uses Tornado\footnote{\texttt{http://www.tornadoweb.org/en/stable/}},
+a Python web framework and asynchronous networking library that supports
+Websockets\footnote{That is, RFC6455: \texttt{https://tools.ietf.org/html/rfc6455}}
+to communicate with the Android application. 
+When a client establishes a connection, it will typically begin by sending a request
+for the regions available on this server. This type of message may simply look like this:
+\begin{verbatim}
+{
+    type: "getRegionList",
+}
+\end{verbatim}
+
+The server will then query the collection and storage module to obtain this information
+and respond with a list of regions (name and geometry) and the types of measurements taken there.
+For example:
+\begin{verbatim}
+{
+    type: "regionList",
+    regions: [
+        {
+            id: 1,
+            name: "Soybean field #1",
+            channels: ["moisture"],
+            type: "rectangle",
+            parameters: {
+                nw: {
+                    x: 0,
+                    y: 0
+                },
+                se: {
+                    x: 10,
+                    y: 10
+                }
+            }
+        },
+    ]
+}
+\end{verbatim}
+
+If there is a problem with a request or if an error is encountered the server may alternatively respond
+with an error message such as the one shown below. This is a possible response to any of the client's requests.
+\begin{verbatim}
+{
+    type: "error",
+    message: "Could not retrieve region list from collection & storage module"
+}
+\end{verbatim}
+
+If the Android application user wants to view the live charts the application will send a message of the following form:
+\begin{verbatim}
+{
+    type: "startStreamingData",
+    averages: ["moisture"]
+}
+\end{verbatim}
+
+If a subsequent \texttt{startStreamingData} request is received from the application it supercedes the current one.
+Also, when the user navigates away from the screen showing the chart(s) the application will send a stop message,
+such as the one show below. Obviously, the server will also stop streaming data to the client if the connection is terminated.
+
+\begin{verbatim}
+{
+    type: "stopStreamingData"
+}
+\end{verbatim}
+
+If the user requests a heat map the Android application will send a message like the following:
+\begin{verbatim}
+{
+    type: "getHeatMap",
+    channels: ["moisture"],
+    region: 1,
+    subregion: {
+        type: "rectangle",
+        nw: {
+            x: 1,
+            y: 1
+        },
+        se: {
+            x: 3,
+            y: 3
+        }
+    },
+    timeSpan: {
+        start: "2015-03-01T06:58:17.922Z",
+        end: "2015-03-01T23:00:00.000Z"
+    }
+}
+\end{verbatim}
+
+The application server will validate the request (e.g. ensure that subregion is contained in region)
+then see if the result is already available (e.g. from a previous request).
+If the results are already available they will be sent immediately.
+Otherwise the application server will send an equivalent request to the data analysis module,
+which will compute the results, and then cache and return those to the client.
+
 
 \section{Data Analysis Module}
 
-The Data Analysis Module (DAM) will be written in Python and will be responsible for analyzing the data that correspond to the user's request. The \textbf{input} to this module is a 3D array of dimensions $\mathbf{Nx3xT}$ where $\mathbf{N}$ is the number of sensors in the user defined region of interest and $\mathbf{T}$ is the number of time frames that the user requested. For each sensor and each time-frame its x-y coordinates along with the harvested measuremnt are provided.
+The Data Analysis Module (DAM) will be written in Python and will be responsible for analyzing the data that correspond to the user's request. The \textbf{input} to this module is a 3D array of dimensions $\mathbf{Nx3xT}$ where $\mathbf{N}$ is the number of sensors in the user defined region of interest and $\mathbf{T}$ is the number of time frames that the user requested. For each sensor and each time-frame its x-y coordinates along with the associated measurements are provided.
 
 Two blocks can be identified in the intended implementation of this module. The first block is responsible for solving a 2D interpolation problem for which the locations of a small number of point measurements are available and an estimate about the humidity conditions across a larger grid of points needs to be computed. 
 
-During this preliminary investigation phase the \textbf{Kriging} method for interpolating spatial data was tested; the computational complexity of the \textbf{Kriging} method makes it a bad candidate for the targeted implementation. Even though it is a very accurate method for this task, a simpler implementation using multiple 2D Gaussian distributions centered at the locations that measurements are available is more appropriate. Figure \ref{fig:Analytics} (a) presents 5 Gaussian distributions placed on a 2D grid emulating the  aforementioned scenario, thus the case of having 5 sensors. Figure \ref{fig:Analytics} (b) presents an existing implementation that superimposes the computed heatmap on GoogleMaps for better visualization. If time allows this feature will also become available in our implementation. 
+During this preliminary investigation phase, the \textbf{Kriging} method for interpolating spatial data was tested; the computational complexity of the \textbf{Kriging} method makes it a bad candidate for the targeted implementation. Even though it is a very accurate method for this task, a simpler implementation using multiple 2D Gaussian distributions centered at the locations that measurements are available is more appropriate. Figure \ref{fig:Analytics}(a)
+presents 5 Gaussian distributions placed on a 2D grid emulating the aforementioned scenario, thus the case of having 5 sensors. Figure \ref{fig:Analytics} (b) presents an existing implementation that superimposes the computed heat map on GoogleMaps for better visualization. If time allows this feature will also become available in our implementation. 
 
 \begin{figure*}[!htbp]
 \begin{center}
@@ -160,10 +256,15 @@ During this preliminary investigation phase the \textbf{Kriging} method for inte
 %\vspace{-0.08in}
 \end{figure*}
 
-The second block of this module is responsible for harvesting the $\mathbf{T}$ heatmaps (*.png files) generated in the above implementation and returns a video object. The implementation of this task will be performed using the \textbf{Python Imaging Libray (PIL)} and the output will be the user defined video object. 
+The second block of this module is responsible for harvesting the $\mathbf{T}$ heat maps generated in the above implementation and returning a video object. The implementation of this task will be performed using the \textbf{Python Imaging Libray (PIL)\footnote{\texttt{http://www.pythonware.com/products/pil/}}} and the output will be the user defined video object. Further details of how this module will communicate with the others will be defined, as needed, once these modules are more mature.
 
-
-\section{Storage Module}
+\section{Collection \& Storage Module}
+The collection and storage module will use MongoDB\footnote{\texttt{http://www.mongodb.org/}}, a ``NoSQL'' database,
+to record sensor and measurement information. 
+Since MongoDB does not require the data it stores to be structured in a particular way,
+no specific schema needs to be defined.
+However, for planning purposes, we have loosely described the information
+that will be stored in Figure \ref{fig:db-soft-schema}.
 
 \begin{figure*}[htb]
 \begin{center}
@@ -175,6 +276,11 @@ The second block of this module is responsible for harvesting the $\mathbf{T}$ h
    %\vspace{-0.08in}
 \end{figure*}
 
+This module may also store results of computations from the data analysis module, 
+but we are deferring the decision of how this should be done because it will depend
+on the output of the data analysis module.
+Also, it may provide its own HTTP server to receive measurement submissions
+or it may share the Tornado instance used by the application server.
 
 
 \section{Sensor Data Simulator}
@@ -183,22 +289,15 @@ this module simulates a collection of virtual sensors.
 For each dimension (e.g. moisture content, temperature, etc.), rather than simply
 generating random, independent values for each sensor at each sample time
 we want to generate more realistic data.
-To do this, we define a consistent model that takes into consideration both
+To do this, we define a model that takes into consideration both
 the time of the measurement (e.g. daily temperature cycles and seasonal variation) and
 the location of the sensor (e.g. perhaps some portion of the region being modeled has a lower elevation or less permeable soil).
-We may also feed a set of historic weather data through the simulator.
 Perhaps the most important aspect of this component is not so much that it generate meaningful data
 but rather that it be replaceable by a system of real sensors without any disruption to the downstream
 components that process its output.
-Section \ref{sub:sensor-data} shows an example of what the body of a message
+An example of what the body of a message
 sent to the collection \& storage module from here might look.
 
-
-\section{Summary?}
-
-\section{Appendix}
-\subsection{Sensor data submission format}
-\label{sub:sensor-data}
 \begin{verbatim}
 {
     definitions: {
@@ -231,22 +330,6 @@ sent to the collection \& storage module from here might look.
                 location: {
                     x: 1,
                     y: 0
-                }
-            }, {
-                id: 3,
-                type: 1
-                name: "Probe 3",
-                location: {
-                    x: 0,
-                    y: 1
-                }
-            }, {
-                id: 4,
-                type: 1
-                name: "Probe 4",
-                location: {
-                    x: 1,
-                    y: 1
                 }
             } // ...
         ]
