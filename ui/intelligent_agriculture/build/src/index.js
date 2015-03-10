@@ -17,7 +17,7 @@
  * under the License.
  */
 
-var $ = require('jquery');
+// var $ = require('jquery');
 
 var React = require('react/addons');
 
@@ -57,6 +57,8 @@ app = {
 
         React.initializeTouchEvents(true);
 
-        React.render(Shell_View(), document.getElementById('shell'));
+        // React.render(Shell_View(), document.getElementById('shell'));
+
+        alert("asfsf");
     }
 };

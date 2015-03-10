@@ -11,12 +11,7 @@ var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 var Debug = require('debug')('Shell:View');
 
-var Servers_Store = require('../stores/servers.store.js');
-
-// var Servers_Actions = require('../actions/server.action.js');
-
 var Shell = React.createClass({
-    mixins : [Reflux.connect(Servers_Store,"currentStatus")],
     
     componentDidMount: function() {
         Debug("componentDidMount");
