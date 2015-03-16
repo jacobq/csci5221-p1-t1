@@ -8,7 +8,7 @@ import git
 
 # Configuration
 #os.environ["GIT_PYTHON_TRACE"] = "1"
-repo_root = os.pardir
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__ ), os.pardir))
 
 def check_for_update():
     def printOutput():
@@ -19,10 +19,11 @@ def check_for_update():
 
     startTime = datetime.datetime.now()
     repo = git.repo.base.Repo(repo_root)
-    oldSHA = repo.heads[0].commit.hexsha
+    head = repo.heads[0]
+    oldSHA = head.commit.hexsha
     g = git.cmd.Git(repo_root)
     pullOutput = g.pull()
-    newSHA = repo.heads[0].commit.hexsha
+    newSHA = head.commit.hexsha
     
     printOutput()
     return oldSHA != newSHA
@@ -33,9 +34,8 @@ def update():
 def main():
     code_has_changed = check_for_update()
     if (code_has_changed):
-        print "New version is available"
+        print "An update was detected"
         update()
     
 if (__name__ == "__main__"):
     main()
-
