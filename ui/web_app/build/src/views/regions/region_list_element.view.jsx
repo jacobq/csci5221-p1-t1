@@ -116,7 +116,7 @@ module.exports = React.createClass({
     },
 
     handleTouchEnd: function(event) {
-        Shell_Actions.loadRegions(this.props.server_data.server_url);
+        Shell_Actions.loadRegionDashboard(this.props.region_data.id);
     },
         
     render: function() { 
@@ -135,11 +135,9 @@ module.exports = React.createClass({
         
         return (<li style={style} onTouchEnd={this.handleTouchEnd}>
 
-            <div style = {this.style_icon}>&#xf233;</div>
+            <div style = {this.style_icon}>&#xf0c8;</div>
                 
-                {this.props.server_data.server_name} : 
-                { this.props.server_data.online == true ? "Online" : "Offline"}                                          
-
+                {this.props.region_data.name}
             </li>);
     }
 });
