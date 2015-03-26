@@ -28,14 +28,5 @@ def check_for_update():
     printOutput()
     return oldSHA != newSHA
     
-def update():
-    print "TODO: write update code"
-
-def main():
-    code_has_changed = check_for_update()
-    if (code_has_changed):
-        print "An update was detected"
-        update()
-    
 if (__name__ == "__main__"):
-    main()
+    check_for_update()
