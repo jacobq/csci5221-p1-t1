@@ -16,34 +16,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var app = {
+
+var $ = require('jquery-browserify');
+
+var React = require('react/addons');
+
+var Shell_View = require('./views/shell.view.jsx');
+
+app = {
     // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
+    // initialize: function() {
+    //     this.bindEvents();
+    // },
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
+    // bindEvents: function() {
+    //     document.addEventListener('deviceready', this.onDeviceReady, false);
+    // },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
+    // onDeviceReady: function() {
+    //     app.receivedEvent('deviceready');
+    // },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+        // alert("adsfasdf");
+        // var parentElement = document.getElementById(id);
+        // var listeningElement = parentElement.querySelector('.listening');
+        // var receivedElement = parentElement.querySelector('.received');
 
-        console.log('Received Event: ' + id);
+        // listeningElement.setAttribute('style', 'display:none;');
+        // receivedElement.setAttribute('style', 'display:block;');
+
+        // console.log('Received Event: ' + id);
+
+        React.initializeTouchEvents(true);
+
+        React.render(Shell_View(), document.getElementById('shell'));
     }
 };

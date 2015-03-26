@@ -28,9 +28,6 @@ module.exports = React.createClass({
         'height' : '90%',
         'width' : '100%',
         'background' : 'rgba(100,100,100,1.0)',
-        'position':'absolute',
-        'top': 0,
-        'left': 0,
         'padding': 0,
         'margin': 0,
         'textAlign' : 'center',
@@ -43,7 +40,7 @@ module.exports = React.createClass({
 
     style_tile_list: {
         'width' : '100%',
-        'background' : 'rgba(255,0,0,1.0)',
+        'background' : 'rgba(255,255,255,1.0)',
         'padding': 0,
         'margin': 0,
         'textAlign' : 'center',
@@ -57,7 +54,7 @@ module.exports = React.createClass({
     style_tile_list_row: {
         'height' : 120,
         'width' : '80%',
-        'background' : 'rgba(0,255,0,1.0)',
+        'background' : 'rgba(255,255,255,1.0)',
         'padding': 0,
         'paddingLeft':'10%',
         'paddingRight':'10%',
@@ -115,6 +112,7 @@ module.exports = React.createClass({
                                 <li style={this.style_tile_list_tile_left} >Sensor Data <span style={this.style_tile_list_tile_icon} >&#xf1fe;</span></li>
                                 <li style={this.style_tile_list_tile_right} onTouchEnd={this.handle_Heatmap_TouchEnd}>Heatmap</li>
                             </ol>
+
                         </div>
                     </div>);
     }

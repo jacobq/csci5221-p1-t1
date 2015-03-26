@@ -4,7 +4,15 @@ import base64
 import uuid
 
 import json
- 
+
+import datetime
+
+import time
+
+import random
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
 # print(base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes))
 
 import tornado.ioloop
@@ -44,6 +52,12 @@ class RegionsHandler(tornado.web.RequestHandler):
 
 
 class WebSocket(tornado.websocket.WebSocketHandler):
+	def some_job(self):
+		print time.strftime("%H:%M:%S")
+		data = {'time' : str(time.strftime("%H:%M:%S")), 'data' : random.randint(100,200)}
+		msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
+		self.write_message(json.dumps(msg))
+
 	def check_origin(self, origin):
 		return True
     
@@ -59,15 +73,35 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 			# region_list = 
 			self.write_message(json.dumps(self.getRegionList()))
 
-		if(data['message_type'] == 'startStreamingData'):
+		elif(data['message_type'] == 'startStreamingData'):
+			print "stream start"
 			# Determine stream type
 			if(data['stream_data'] == 'moisture'):
-				print 38
 
-		if(data['message_type'] == 'heatmap_bounds'):
+				# Initital
+				data = {'time' : str(time.strftime("%H:%M:%S")), 'data' : random.randint(100,200)}
+				msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
+				self.write_message(json.dumps(msg))
+				
+				sched = BackgroundScheduler()
+				sched.start()
+
+				self.stream_job = sched.add_job(self.some_job, 'interval', minutes=5)
+				# job.remove()
+				# sched.add_interval_job(some_job, seconds = 10)
+
+
+				# sched.shutdown()
+
+		elif(data['message_type'] == 'stopStreamingData'):
+			print "stream stop"
+			self.stream_job.remove()
+
+		elif(data['message_type'] == 'heatmap_bounds'):
 			print "getHeatmapBounds"
 			# Extract region id
 		
+			
 			self.write_message(json.dumps(self.getHeatmapBounds(data['region_id'])))
 
 
@@ -95,6 +129,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 
 	def on_close(self):
 		print "WebSocket closed"
+		self.stream_job.remove()
 
 	def getRegionList(self): 
 		print "getRegionList"

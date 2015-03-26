@@ -25,6 +25,10 @@ module.exports = React.createClass({
                     endDate: null,
                     endTime: null,
                     endTimes:[],
+                    xMin: null,
+                    xMax: null,
+                    yMin: null,
+                    yMax: null,
                     heatmap_bounds: {'date' : [], 'time': [], 'x':[], 'y': []}, 'start_date_entered' : false, 'end_date_entered' : false};
     },
 
@@ -117,6 +121,27 @@ module.exports = React.createClass({
             });
     },
 
+    selected_xMin: function(evt){
+        this.setState({
+                xMin: evt.target.value,
+            });
+    },
+    selected_xMax: function(evt){
+        this.setState({
+                xMax: evt.target.value,
+            });
+    },
+    selected_yMin: function(evt){
+        this.setState({
+                yMin: evt.target.value,
+            });
+    },
+    selected_yMax: function(evt){
+        this.setState({
+                yMax: evt.target.value,
+            });
+    },
+
     render: function() {            
             return (<div style={this.style_base}>
                         <div style={this.style_group}>
@@ -153,23 +178,34 @@ module.exports = React.createClass({
                         </div>
 
                         <div style={this.style_group}>
-                            <select style={this.style_select_left} className="styled-select slate">
-                                <option selected="selected">Min X</option>
+                            <select onChange={this.selected_xMin} style={this.style_select_left} className="styled-select slate">
+                                {this.state.xMin != null ? <option style={this.style_select_null} selected="selected">{this.state.xMin}</option> : <option selected="selected">Min X</option>}
+                                {this.state.heatmap_bounds.x.map(function(data) {
+                                    return <option value={data} >{data}</option>
+                                })}
                             </select>
 
-                            <select style={this.style_select_right} className="styled-select slate">
-                                <option selected="selected">Max X</option>
+                            <select onChange={this.selected_xMax} style={this.style_select_right} className="styled-select slate">
+                                {this.state.xMax != null ? <option style={this.style_select_null} selected="selected">{this.state.xMax}</option> : <option selected="selected">Max X</option>}
+                                {this.state.heatmap_bounds.x.map(function(data) {
+                                    return <option value={data} >{data}</option>
+                                })}
                             </select>
                         </div>
 
-
                         <div style={this.style_group}>
-                            <select style={this.style_select_left} className="styled-select slate">
-                                <option selected="selected">Min Y</option>
+                            <select onChange={this.selected_yMin} style={this.style_select_left} className="styled-select slate">
+                                {this.state.yMin != null ? <option style={this.style_select_null} selected="selected">{this.state.yMax}</option> : <option selected="selected">Min Y</option>}
+                                {this.state.heatmap_bounds.y.map(function(data) {
+                                    return <option value={data} >{data}</option>
+                                })}
                             </select>
 
-                            <select style={this.style_select_right} className="styled-select slate">
-                                <option selected="selected">Max Y</option>
+                            <select onChange={this.selected_yMax} style={this.style_select_right} className="styled-select slate">
+                                {this.state.yMax != null ? <option style={this.style_select_null} selected="selected">{this.state.yMax}</option> : <option selected="selected">Max Y</option>}
+                                {this.state.heatmap_bounds.y.map(function(data) {
+                                    return <option value={data} >{data}</option>
+                                })}
                             </select>
                         </div>
                 </div>);

@@ -21,9 +21,20 @@ module.exports = Reflux.createStore({
     },
 
     register: function(server_data){
-        server_data.online = false;
+        dne = true;
+        // Check id exists
+        this.server_list.map(function(server) {
+            if(server.server_id == server_data.server_id){
+                dne = false;
+                
+            }
+        })
 
-        this.server_list.push(server_data);
+        if(dne){
+            server_data.online = false;
+
+            this.server_list.push(server_data);
+        }
 
         this.trigger(this.server_list);
     },

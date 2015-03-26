@@ -3,6 +3,7 @@
 exports.socket = null;
 exports.state = 'closed';
 exports.server_url = null;
+exports.stream_data = null;
 
 // {
 	

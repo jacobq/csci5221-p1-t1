@@ -107,7 +107,7 @@ gulp.task('watch_shell', function() {
 
 gulp.task('compress', function() {
 	// Compresses and uglifies
-  	gulp.src('../static/js/build/*.js')
+  	gulp.src('../js/bundle.js')
   		.pipe(uglify({compress: true, mangle: true}))
-    	.pipe(gulp.dest('../static/js/prod/'))
+    	.pipe(gulp.dest('../js/prod/'))
 });

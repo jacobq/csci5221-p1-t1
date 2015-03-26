@@ -27,19 +27,26 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 
-        <script type="text/javascript" src="cordova.js"></script>
-
         <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/select.css" />
+        <link rel="stylesheet" type="text/css" href="css/animation_map.css" />
+        <!-- <link rel="stylesheet" type="text/css" href="css/font-awesome.css" /> -->
+
+        <link href='font-awesome-4.3.0/css/font-awesome.min.css' rel='stylesheet' type='text/css' >
+        <!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> -->
+
+
+        <script src="js/ping-pong.js"></script>
 
         <script src="js/bundle.js"></script>
 
         <script>
-            // $( document ).ready(function() {
-                app.initialize();
+            $( document ).ready(function() {
+                app.receivedEvent("null");
 
                 
                 
-            // });
+            });
 
         </script>
         <title>Hello World</title>

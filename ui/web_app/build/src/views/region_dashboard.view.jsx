@@ -41,10 +41,14 @@ module.exports = React.createClass({
         'position':'absolute',
         'top': '12%',
         'left': 0,
+        'overflow':'scroll',
     },
         
     render: function() {            
-            return (<div style={this.style_base}><Tile_View /></div>);
+            return (<div style={this.style_base}>
+                    <Live_Data_View />
+                    <Tile_View />
+                </div>);
 
     }
 });

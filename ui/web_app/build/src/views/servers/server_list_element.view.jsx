@@ -22,7 +22,7 @@ module.exports = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     checkServer: function() {
-        
+
         var server_id = this.props.server_data.server_id;
 
         var ping = $.ajax({
