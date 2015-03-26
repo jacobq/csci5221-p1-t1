@@ -9,25 +9,11 @@ var Reflux = require('reflux');
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
-var Debug = require('debug')('Shell:View');
+var Debug = require('debug')('Content:View');
 
-var Shell_Store = require('../stores/shell.store.js');
+var Shell_Actions = require('../actions/shell.actions.js');
 
-var Header_View = require('./header.view.jsx');
-
-var Server_View = require('./servers.view.jsx');
-var Region_View = require('./regions.view.jsx');
-var Region_Dashboard_View = require('./region_dashboard.view.jsx');
-
-var Heatmap_Query_View = require('./heatmap/heatmap_query.view.jsx');
-
-var Server_Actions = require('../actions/server.action.js');
-
-var Server_Store = require('../stores/servers.store.js');
-
-var WebSocket_Actions = require('../actions/websocket.actions.js');
-
-var Shell = React.createClass({
+var Content = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
@@ -57,47 +43,29 @@ var Shell = React.createClass({
     },
 
     style_base: {
-        'height' : '100%',
+        'height' : '88%',
         'width' : '100%',
-        'background' : 'rgba(255,255,255,1.0)',
+        'background' : 'rgba(255,25,255,1.0)',
         'position':'absolute',
-        'top': 0,
+        'top': '12%',
         'left': 0,
         'overflow':'hidden',
+    },
+
+    handleOnTouchEnd: function(evt){
+        Shell_Actions.slideContentUp();
     },
         
     render: function() {  
 
-        if(this.state.current_page == 'server_list'){
-            if(this.state.selected !== 'server_selected') {
-                this.state.selected = null;
-            }
-
-            if(this.state.selected !== 'region_selected') {
-                this.state.selected = null;
-            }
+        if(this.props.slideUp != null) {
+            alert('null');
         }
 
-        if(this.state.current_page == 'region_list'){
-            this.state.selected = 'server_selected';
-        }
-
-        if(this.state.current_page == 'region_dashboard'){
-            this.state.selected = 'region_selected';
-        }
-
-        return (<div style={this.style_base}>
-                    <Header_View selected={this.state.selected}/>
-
-                    { this.state.current_page == 'server_list' ? <Server_View /> : null }
-                    { this.state.current_page == 'region_list' ? <Region_View /> : null }     
-                    { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View /> : null } 
-                    { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View /> : null }
-
-                </div>);
+        return (<div onClick={this.handleOnTouchEnd} style={this.style_base}></div>);
 
 
     }
 });
 
-module.exports = Shell;
+module.exports = Content;

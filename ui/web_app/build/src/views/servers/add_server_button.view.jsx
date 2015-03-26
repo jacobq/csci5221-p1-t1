@@ -11,6 +11,8 @@ var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 var Debug = require('debug')('Header:View');
 
+var Shell_Actions = require('../../actions/shell.actions.js');
+
 module.exports = React.createClass({
     
     componentDidMount: function() {
@@ -45,7 +47,7 @@ module.exports = React.createClass({
   
         'textAlign' : 'center',
         'fontFamily': '"Arial Black", Gadget, sans-serif',
-        'fontSize': '1.25em',
+        'fontSize': '1.5em',
 
         'verticalAlign':'bottom',
 
@@ -61,11 +63,17 @@ module.exports = React.createClass({
 
         'marginLeft': 5,
         'marginRight': 5,
+
+    },
+
+    handleOnTouchEnd: function(evt){
+        Shell_Actions.loadAddServer("up");
     },
         
+        
     render: function() {            
-            return (<div style={this.style_base}>
-                <span style={this.style_text}>Add Server <span style={this.style_fa}>&#xf055;</span></span>
-                </div>);
+            return (<div onClick={this.handleOnTouchEnd} style={this.style_base}>
+                        <span style={this.style_text}>Add Server <span style={this.style_fa}>&#xf055;</span></span>
+                    </div>);
     }
 });

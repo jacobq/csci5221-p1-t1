@@ -31,6 +31,8 @@ module.exports = React.createClass({
         'position':'absolute',
         'top': 0,
         'left': 0,
+        'zIndex':10,
+        'overflow':'hidden',
     },
 
     style_icon_list: {
@@ -60,15 +62,19 @@ module.exports = React.createClass({
         'fontSize':42,
         'float':'left',
 
+        'WebkitAnimationDuration': '0.8s',
+        'animationDuration': '0.8s',
+        'WebkitAnimationFillMode': 'both',
+        'animationFillMode': 'both',
+
     },
 
     handle_Server_TouchEnd: function(evt){
-        alert("server");
-        Shell_Actions.loadServers();
+        Shell_Actions.loadServers("right");
     },
 
     handle_Regions_TouchEnd: function(evt){
-        Shell_Actions.loadRegions_View();
+        Shell_Actions.loadRegions_View("right");
     },
         
     render: function() {   
@@ -92,9 +98,18 @@ module.exports = React.createClass({
 
             return (<div style={this.style_base}>
                         <ol style={this.style_icon_list}>
-                            { server_show ? <li onTouchEnd={this.handle_Server_TouchEnd} style={this.style_icon}>&#xf233;</li> : null}
-                            { regions_show ? <li onTouchEnd={this.handle_Regions_TouchEnd} style={this.style_icon}>&#xf009;</li> : null}
-                            { region_show ? <li onTouchEnd={this.handle_Region_TouchEnd} style={this.style_icon}>&#xf0c8;</li> : null }
+
+                            <ReactCSSTransitionGroup transitionName="example">
+                                { server_show ? <li onTouchEnd={this.handle_Server_TouchEnd} style={this.style_icon}>&#xf233;</li> : null}
+                            </ReactCSSTransitionGroup>  
+
+                            <ReactCSSTransitionGroup transitionName="example">
+                                { regions_show ? <li onTouchEnd={this.handle_Regions_TouchEnd} style={this.style_icon}>&#xf009;</li> : null}
+                            </ReactCSSTransitionGroup> 
+
+                            <ReactCSSTransitionGroup transitionName="example">
+                                { region_show ? <li onTouchEnd={this.handle_Region_TouchEnd} style={this.style_icon}>&#xf0c8;</li> : null }
+                            </ReactCSSTransitionGroup> 
                            
                         </ol>
                     </div>);

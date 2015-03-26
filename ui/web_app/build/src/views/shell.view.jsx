@@ -15,7 +15,10 @@ var Shell_Store = require('../stores/shell.store.js');
 
 var Header_View = require('./header.view.jsx');
 
+var Content_View = require('./content.view.jsx');
+
 var Server_View = require('./servers.view.jsx');
+var Add_Server_View = require('./servers/add_server.view.jsx');
 var Region_View = require('./regions.view.jsx');
 var Region_Dashboard_View = require('./region_dashboard.view.jsx');
 
@@ -31,26 +34,52 @@ var Shell = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
-        return {current_page: 'server_list', selected:null};
+        return {current_page: 'server_list', selected:null, slide_dir: 'left', v_slide_state: 'down', slide:"left"};
     },
 
     
     onStatusChange: function(data) {
         if(data.msg_type == "change_page") {
-            this.setState({
-                current_page: data.msg
-            });
+
+            
+            // Change Dir
+            // if((this.state.current_page === 'region_list' && data.msg === 'server_list') ||
+            //     (this.state.current_page === 'region_dashboard' && data.msg === 'server_list') ||
+            //     (this.state.current_page === 'region_dashboard' && data.msg === 'region_list')) {
+            //     this.setState({
+            //         slide_dir: "right",
+            //         current_page: data.msg.page
+            //     });
+            // }
+
+            // else {
+                
+                // Check for up/down slide
+                // if(data.msg.slide_dir === 'up') {
+                //     this.setState({
+                //         v_slide_state: 'up',
+                //         slide_dir: data.msg.slide_dir,
+                //         current_page: data.msg.page
+                //     });
+                // }
+
+                // else{
+                    this.setState({
+                        // v_slide_state: 'down',
+                        slide_dir: data.msg.slide_dir,
+                        current_page: data.msg.page
+                    });
+                // }
+            // }
         }
+    },
+
+    componentWillMount: function() {
+        this.listenTo(Shell_Store, this.onStatusChange);
     },
 
     componentDidMount: function() {
         Debug("componentDidMount");
-
-        this.listenTo(Shell_Store, this.onStatusChange);
-
-        // Server_Store.listen(function(status) {
-        //     console.log('status: ', status);
-        // });
     },
 
     componentWillUnmount: function() {
@@ -86,14 +115,47 @@ var Shell = React.createClass({
             this.state.selected = 'region_selected';
         }
 
+        var trans = "slideHL";
+
+        if(this.state.slide_dir == 'left'){
+            trans = "slideHL";
+        }
+
+        if(this.state.slide_dir == 'right'){
+            trans = "slideHR";
+        }
+
+        if(this.state.slide_dir === 'up'){
+            trans = "slideVU";
+        }
+
+
+        if(this.state.slide_dir === 'down'){
+            trans = "slideVD";
+        }
+
         return (<div style={this.style_base}>
                     <Header_View selected={this.state.selected}/>
+                    
+                    
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'server_list' ? <Server_View /> : null }
+                    </ReactCSSTransitionGroup>
 
-                    { this.state.current_page == 'server_list' ? <Server_View /> : null }
-                    { this.state.current_page == 'region_list' ? <Region_View /> : null }     
-                    { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View /> : null } 
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'add_server' ? <Add_Server_View /> : null } 
+                    </ReactCSSTransitionGroup>  
+                    
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'region_list' ? <Region_View /> : null }   
+                    </ReactCSSTransitionGroup>  
+
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View /> : null } 
+                    </ReactCSSTransitionGroup>  
+
                     { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View /> : null }
-
+                    { this.state.current_page == 'null' ?<Content_View slideUp={this.state.content_slide_up == true ? 88 : null}/> : null }
                 </div>);
 
 

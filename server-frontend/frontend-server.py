@@ -86,7 +86,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 				sched = BackgroundScheduler()
 				sched.start()
 
-				self.stream_job = sched.add_job(self.some_job, 'interval', minutes=5)
+				self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
 				# job.remove()
 				# sched.add_interval_job(some_job, seconds = 10)
 

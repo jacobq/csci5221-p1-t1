@@ -14,6 +14,7 @@ module.exports = Reflux.createStore({
     init: function() {
 
         this.listenTo(Shell_Actions.loadServers, this.loadServers);
+        this.listenTo(Shell_Actions.loadAddServer, this.loadAddServer);
         this.listenTo(Shell_Actions.loadRegions, this.loadRegions);
         this.listenTo(Shell_Actions.loadRegionDashboard, this.loadRegionDashboard);
         this.listenTo(Shell_Actions.loadHeatmapQuery, this.loadHeatmapQuery);
@@ -23,6 +24,8 @@ module.exports = Reflux.createStore({
         this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
 
         this.listenTo(Shell_Actions.loadRegions_View, this.loadRegions_View);
+
+        
     },
 
     connectWs: function(server_url) {
@@ -61,7 +64,7 @@ module.exports = Reflux.createStore({
         
         if(msg.message_type == "getRegionList_Response") {
             Regions_Actions.updateRegionList(msg.region_list);
-            this.trigger({"msg_type" : "change_page", "msg" : "region_list"});
+            this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_list", "slide_dir" : "left"}});
         }
 
         if(msg.message_type == "stream_data") {
@@ -70,15 +73,19 @@ module.exports = Reflux.createStore({
     },
 
     // Callback
-    loadServers: function() {
-        this.trigger({"msg_type" : "change_page", "msg" : "server_list"});
+    loadServers: function(trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "server_list", "slide_dir" : trans}});
+    },
+
+    loadAddServer: function(trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "add_server", "slide_dir" : trans}});
     },
 
     loadRegions: function(server_url) {
         if(ws.state == 'open') {
             if(ws.server_url == server_url) {
                 // alert(ws.socket.readyState);
-                this.trigger({"msg_type" : "change_page", "msg" : "region_list"});
+                this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_list", "slide_dir" : "left"}});
             }
 
             else{
@@ -93,15 +100,17 @@ module.exports = Reflux.createStore({
         
     },
 
-    loadRegionDashboard: function(region_id) {
-        this.trigger({"msg_type" : "change_page", "msg" : "region_dashboard"});
+    loadRegionDashboard: function(region_id, trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans}});
     },
 
     loadHeatmapQuery: function() {
-        this.trigger({"msg_type" : "change_page", "msg" : "heatmap_query"});
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "heatmap_query", "slide_dir" : "left"}});
     },
 
-    loadRegions_View: function() {
-        this.trigger({"msg_type" : "change_page", "msg" : "region_list"});
+    loadRegions_View: function(trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_list", "slide_dir" : trans}});
     },
+
+    
 });

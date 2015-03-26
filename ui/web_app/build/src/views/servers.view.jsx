@@ -32,6 +32,11 @@ module.exports = React.createClass({
         'position':'absolute',
         'top': '12%',
         'left': 0,
+        'zIndex':0,
+        'WebkitAnimationDuration': '1.0s',
+        'animationDuration': '1.0s',
+        'WebkitAnimationFillMode': 'both',
+        'animationFillMode': 'both',
     },
         
     render: function() {            

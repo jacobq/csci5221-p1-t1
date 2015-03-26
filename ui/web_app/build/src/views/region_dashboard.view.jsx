@@ -42,6 +42,10 @@ module.exports = React.createClass({
         'top': '12%',
         'left': 0,
         'overflow':'scroll',
+        'WebkitAnimationDuration': '1.0s',
+        'animationDuration': '1.0s',
+        'WebkitAnimationFillMode': 'both',
+        'animationFillMode': 'both',
     },
         
     render: function() {            
