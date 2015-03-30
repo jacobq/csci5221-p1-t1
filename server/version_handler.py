@@ -1,3 +1,4 @@
+import sys
 from cStringIO import StringIO
 from tornado.web import RequestHandler
 from update import check_for_update
