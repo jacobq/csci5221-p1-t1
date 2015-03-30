@@ -1,0 +1,9 @@
+import pymongo
+
+client = pymongo.MongoClient('localhost', 27017)
+
+db = client.csci5221
+regions = db.regions
+
+for region in regions.find():
+	print region

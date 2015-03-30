@@ -25,7 +25,8 @@ module.exports = React.createClass({
     style_base: {
         'height' : '10%',
         'width' : '100%',
-        'background' : 'rgba(204,203,49,1.0)',
+        // 'background' : 'rgba(204,203,49,1.0)',
+        'background' : 'rgba(129,164,60,1.0)',
         'position':'absolute',
         'bottom': 0,
         'left': 0,

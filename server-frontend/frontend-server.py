@@ -5,6 +5,8 @@ import uuid
 
 import json
 
+from bson.json_util import dumps
+
 import datetime
 
 import time
@@ -21,6 +23,8 @@ import tornado.options
 import tornado.ioloop
 import tornado.websocket
 from tornado.options import define, options
+
+import pymongo
 
 settings = {'debug': True, 
             'static_path': os.path.join(os.getcwd(), 'static'),
@@ -39,7 +43,12 @@ class HeartbeatHandler(tornado.web.RequestHandler):
 		self.set_header("Access-Control-Allow-Origin", "http://localhost:8000")
 
 	def get(self):
-		self.write({'status' : 'online'})
+		# Get Regions Count
+		client = pymongo.MongoClient('localhost', 27017)
+		db = client.csci5221
+		regions = db.regions
+
+		self.write({'status' : 'online', 'region_count' : regions.count() })
 
 class RegionsHandler(tornado.web.RequestHandler):
 	def set_default_headers(self):
@@ -132,6 +141,22 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 		self.stream_job.remove()
 
 	def getRegionList(self): 
+		client = pymongo.MongoClient('localhost', 27017)
+		db = client.csci5221
+		regions = db.regions
+
+		region_list = []
+		
+		for region in regions.find():
+			# Take the string representation of the ID
+			region['id'] = str(region['_id'])
+
+			# Remove the ID as it can't be used easily on the
+			# client side.
+			del region["_id"]
+
+			region_list.append(region)
+		
 		print "getRegionList"
 		region_1 = {}
 
@@ -149,7 +174,7 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 		region_2['name'] = ['Region 2']
 		region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
 
-		return {'test':'test', 'message_type': 'getRegionList_Response', 'region_list' : [ region_1, region_2 ]}
+		return {'test':'test', 'message_type': 'getRegionList_Response', 'region_list' : region_list}
 
 	def getHeatmapBounds(self, region_id): 
 		region_bounds = {}

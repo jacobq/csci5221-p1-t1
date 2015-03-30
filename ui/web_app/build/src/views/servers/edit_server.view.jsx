@@ -20,22 +20,9 @@ module.exports = React.createClass({
     getInitialState: function() {
         return {server_name: null, server_id: null, server_url: null, server_port: null};
     },
-
-    componentWillMount:function(){
-        if(typeof this.props.page_data !== 'undefined'){
-            this.setState({
-                server_name:this.props.page_data.server_name,
-                server_id:this.props.page_data.server_id,
-                server_url:this.props.page_data.server_url,
-                server_port:this.props.page_data.server_port,
-            });
-        }
-    },
     
     componentDidMount: function() {
         Debug("componentDidMount");
-
-        
     },
 
     componentWillUnmount: function() {
@@ -148,19 +135,12 @@ module.exports = React.createClass({
 
     handle_Submit_OnTouchEnd: function(evt){
         if(this.state.server_id === null && this.state.server_name !== null) {
-            Server_Actions.register({'server_id' : this.state.server_name, 'server_name' : this.state.server_name, 'server_url' : this.state.server_url, 'server_port': this.state.server_port})
+            Server_Actions.register({'server_id' : this.state.server_name, 'server_name' : this.state.server_name, 'server_url' : this.state.server_url + ":" + this.state.server_port})
         }
 
         else {
-            Server_Actions.register({'server_id' : this.state.server_id, 'server_name' : this.state.server_name, 'server_url' : this.state.server_url, 'server_port': this.state.server_port})
+            Server_Actions.register({'server_id' : this.state.server_id, 'server_name' : this.state.server_name, 'server_url' : this.state.server_url + ":" + this.state.server_port})
         }
-        
-        Shell_Actions.loadServers("down");
-        
-    },
-
-    handle_Save_OnTouchEnd: function(evt){
-        Server_Actions.edit({'server_id' : this.props.page_data.server_id, 'server_name' : this.props.page_data.server_name, 'server_url' : this.props.page_data.server_url, 'server_port': this.props.page_data.server_port},{'server_id' : this.state.server_id, 'server_name' : this.state.server_name, 'server_url' : this.state.server_url, 'server_port': this.state.server_port})
         
         Shell_Actions.loadServers("down");
         
@@ -190,20 +170,20 @@ module.exports = React.createClass({
         });
     },
     
-    render: function() {         
+    render: function() {    
             return (<div style={this.style_base}>
                         <div onClick={this.handle_Cancel_OnTouchEnd} style={this.style_button_cancel}>
                             <span style={this.style_text}>Cancel<span style={this.style_fa}>&#xf057;</span></span>
                         </div>
 
                         <div style={this.style_content}>
-                            <input onChange={this.handle_ServerName_Input} style={this.style_input} placeholder="Server Name" value={this.state.server_name}></input>
-                            <input onChange={this.handle_ServerID_Input} style={this.style_input} placeholder={this.state.server_name == null ? "Server ID" : this.state.server_name} value={this.state.server_id}></input>
-                            <input onChange={this.handle_ServerURL_Input} style={this.style_input} placeholder="Server URL/IP Address" value={this.state.server_url}></input>
-                            <input onChange={this.handle_ServerPort_Input} style={this.style_input} placeholder="Port" value={this.state.server_port}></input>
+                            <input onChange={this.handle_ServerName_Input} style={this.style_input} placeholder="Server Name" value={this.props.page_data.server_name}></input>
+                            <input style={this.style_input} placeholder={this.state.server_name == null ? "Server ID" : this.state.server_name} value={this.props.page_data.server_id}></input>
+                            <input style={this.style_input} placeholder="Server URL/IP Address" value={this.props.page_data.server_url}></input>
+                            <input style={this.style_input} placeholder="Port" value={this.props.page_data.server_port}></input>
                         </div>
-                        <div onClick={this.props.page_mode === "create" ? this.handle_Submit_OnTouchEnd : this.handle_Save_OnTouchEnd} style={this.style_button_submit}>
-                            <span style={this.style_text}>{this.props.page_mode === "create" ? "Submit" : "Save"}<span style={this.style_fa}>&#xf058;</span></span>
+                        <div onClick={this.handle_Submit_OnTouchEnd} style={this.style_button_submit}>
+                            <span style={this.style_text}>Save<span style={this.style_fa}>&#xf058;</span></span>
                         </div>
                     </div>);
     }

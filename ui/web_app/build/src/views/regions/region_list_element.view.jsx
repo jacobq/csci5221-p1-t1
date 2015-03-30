@@ -132,12 +132,11 @@ module.exports = React.createClass({
         // if(this.state.currentStatus == false) {
         //     style = this.style_offline;
         // }
-        
+
         return (<li style={style} onTouchEnd={this.handleTouchEnd}>
 
-            <div style = {this.style_icon}>&#xf0c8;</div>
-                
-                {this.props.region_data.name}
-            </li>);
+                        {this.props.region_data.shape == "rectangle" ? <div style = {this.style_icon}>&#xf0c8;</div> : <div style = {this.style_icon}>&#xf111;</div>}
+                        {this.props.region_data.name}
+                </li>);
     }
 });

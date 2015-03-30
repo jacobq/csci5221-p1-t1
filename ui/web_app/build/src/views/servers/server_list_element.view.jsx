@@ -30,14 +30,21 @@ module.exports = React.createClass({
 
     checkServer: function() {
 
+        var _this = this;
+
         var server_id = this.props.server_data.server_id;
 
         var ping = $.ajax({
-            url: 'http://' + this.props.server_data.server_url + "/heartbeat",
+            url: 'http://' + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
         });
 
         ping.done(function( msg ) {
             Server_Actions.statusUpdate(server_id, true);
+            
+            _this.setState({
+                server_state: msg.status,
+                region_count: msg.region_count,
+            })
 
         });
 
@@ -48,13 +55,14 @@ module.exports = React.createClass({
 
 
     getInitialState: function() {
-        return {currentStatus: false, expanded: false, style_base: this.style_base};
+        return {currentStatus: false, expanded: false, style_base: this.style_base, expanded_height: 165, server_state: null, region_count: null};
     },
 
     componentDidMount: function() {
         Debug("componentDidMount");
 
         // Move to own function for reuse
+        this.checkServer();
     },
 
     componentWillUnmount: function() {
@@ -86,39 +94,41 @@ module.exports = React.createClass({
 
         'margin':0,
         'padding':0,
-        'marginTop':35,
+        
 
 
     },
 
     style_button_edit: {
         'cursor':'default',
-        'height':30,
+        'height':25,
         'width':'50%',
         'position': 'relative',
         'top':0,
         
-        'background' : 'rgba(255,25,0,1.0)',
+        'background' : 'rgba(244,187,58,1.0)',
         'float':'left',
         'margin':0,
         'padding':0,
+        'paddingTop':5,
 
 
     },
 
     style_button_connect: {
         'cursor':'default',
-        'height':30,
+        'height':25,
         'width':'50%',
         'position': 'relative',
         'top':0,
         'right':0,
         
         
-        'background' : 'rgba(2,25,250,1.0)',
+        'background' : 'rgba(129,164,60,1.0)',
         'float':'right',
         'margin':0,
         'padding':0,
+        'paddingTop':5,
         
 
     },
@@ -172,6 +182,127 @@ module.exports = React.createClass({
         'marginRight': 5,
     },
 
+    style_fa_button: {
+        'position':'relative',
+        'fontFamily':'FontAwesome',
+        'margin': 0,
+        'padding': 0,
+        'fontSize': '1.6em',
+
+        'marginLeft': 5,
+        'marginRight': 5,
+        'top':'2px',
+    },
+
+    style_title: {
+
+        
+        'height': 37,
+        'width': '100%',
+        'margin': 0,
+        'padding': 0,
+        'paddingTop':8,
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
+        'fontSize': '1.5em',
+        // 'background' : 'rgba(2,25,250,1.0)',
+    },
+
+    style_info: {
+
+        
+        'height': 85,
+        'width': '100%',
+        'margin': 0,
+        'padding': 0,
+        'paddingTop':5,
+        
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
+        'fontSize': '1.5em',
+        'background' : 'rgba(87,116,131,1.0)',
+    },
+
+    style_info_list_left: {
+
+        
+        'height': '100%',
+        'width': '45%',
+        'margin': 0,
+        'padding': 0,
+
+        'marginLeft':'4%',
+        
+        
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
+        'fontSize': '0.75em',
+        // 'background' : 'rgba(2,25,5,1.0)',
+        'listStyle':'none',
+        'display':'block',
+        'float':'left',
+    },
+
+    style_info_list_right: {
+
+        
+        'height': '100%',
+        'width': '45%',
+        'margin': 0,
+        'padding': 0,
+
+        'paddingLeft':'1%',
+        
+        'marginRight':'4%',
+        
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
+        'fontSize': '0.75em',
+        // 'background' : 'rgba(2,25,5,1.0)',
+        'listStyle':'none',
+        'display':'block',
+        'float':'right',
+        
+    },
+
+    style_info_list_item: {
+
+        
+        'height': 28,
+        'width': '100%',
+        'margin': 0,
+        'padding': 0,
+        
+        // 'background' : 'rgba(255,25,5,1.0)',
+        
+        'display':'block',
+    },
+
+    style_info_list_item_title: {
+
+        
+        'height': 25,
+        'margin': 0,
+        'padding': 0,
+        
+        // 'background' : 'rgba(255,255,255,1.0)',
+        
+        
+
+        'float':'left',
+    },
+
+    style_info_list_item_data: {
+
+        
+        'height': 25,
+        'margin': 0,
+        'padding': 0,
+        'marginLeft':5,
+        
+        // 'background' : 'rgba(255,255,255,1.0)',
+        
+        
+
+        'float':'left',
+    },
+
     handleTouchEnd: function(event) {
         // Not Expanded
         if(this.state.expanded === false) { 
@@ -182,7 +313,7 @@ module.exports = React.createClass({
                 var tween = new TWEEN.Tween( { height : 45, 
                                                   
                                                 } )
-                        .to( { height : 95 }, 500 )
+                        .to( { height : this.state.expanded_height }, 500 )
                         .easing( TWEEN.Easing.Linear.None )
                         .onUpdate( function () {
 
@@ -226,7 +357,7 @@ module.exports = React.createClass({
                 expanded: false,
             })
                 var test = this;
-                var tween = new TWEEN.Tween( { height : 95, 
+                var tween = new TWEEN.Tween( { height : this.state.expanded_height, 
                                                   
                                                 } )
                         .to( { height : 45 }, 500 )
@@ -273,46 +404,49 @@ module.exports = React.createClass({
     },
 
     handle_Connect_TouchEnd: function(evt) {
-        Shell_Actions.loadRegions(this.props.server_data.server_url);
+        Shell_Actions.loadRegions(this.props.server_data.server_url, this.props.server_data.server_port);
+    },
+
+    handle_Edit_TouchEnd: function(evt) {
+        Shell_Actions.loadEditServer("up",{"server_url" : this.props.server_data.server_url, 
+                                            "server_port" : this.props.server_data.server_port, 
+                                            "server_id" : this.props.server_data.server_id,
+                                            "server_name" : this.props.server_data.server_name});
     },
         
-    render: function() { 
-
-        // alert(this.props.server_id + " : " + this.state.currentStatus);
-        
+    render: function() {     
         var style = this.style_base;
 
-        var className = null;
-
-        // if(this.state.currentStatus == true) {
-        //     style = this.style_online;
-        // }
-
-        // if(this.state.currentStatus == false) {
-        //     style = this.style_offline;
-        // }
-    
-        // if(this.state.expanded === true){
-            
-        // }
-
-
-
-        console.log(this.state.style_base.height);
-        
         return (<li style={this.state.style_base} onTouchEnd={this.handleTouchEnd}>
 
             <div style = {this.style_icon}>&#xf233;</div>
+            <div style={this.style_title}>{this.props.server_data.server_name} : { this.props.server_data.online == true ? "Online" : "Offline"}  
+            </div>
 
+            <ReactCSSTransitionGroup transitionName="example">                
+                {this.state.expanded === true ?
+                    <div style={this.style_info}>
+                        <ul style={this.style_info_list_left}>
+                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server ID:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_id}</div></li>
+                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server URL:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_url}</div></li>
+                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Port:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_port}</div></li>
+                        </ul>
 
-                
-                {this.props.server_data.server_name} : 
-                { this.props.server_data.online == true ? "Online" : "Offline"}  
+                        <ul style={this.style_info_list_right}>
+                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Status:</div><div style={this.style_info_list_item_data}> {this.state.server_state}</div></li>
+                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Region Count:</div><div style={this.style_info_list_item_data}> {this.state.region_count}</div></li>
+                        </ul>
+                </div> : null } 
+            </ReactCSSTransitionGroup>     
+              
 
-            {this.state.expanded === true ? <div style={this.style_button_group}>
-                <div style={this.style_button_edit}>Edit</div>
-                <div onTouchEnd={this.handle_Connect_TouchEnd} style={this.style_button_connect}>Connect</div>
-            </div> : null }               
+            <ReactCSSTransitionGroup transitionName="example">
+                {this.state.expanded === true ?
+                    <div style={this.style_button_group}>
+                        <div onTouchEnd={this.handle_Edit_TouchEnd} style={this.style_button_edit}><span style={this.style_fa_button}>&#xf040;</span>Edit</div>
+                        <div onTouchEnd={this.handle_Connect_TouchEnd} style={this.style_button_connect}>Connect<span style={this.style_fa_button}>&#xf045;</span></div>
+                    </div> : null } 
+            </ReactCSSTransitionGroup>                  
 
             </li>);
     }

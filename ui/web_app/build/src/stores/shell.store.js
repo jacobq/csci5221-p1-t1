@@ -15,6 +15,7 @@ module.exports = Reflux.createStore({
 
         this.listenTo(Shell_Actions.loadServers, this.loadServers);
         this.listenTo(Shell_Actions.loadAddServer, this.loadAddServer);
+        this.listenTo(Shell_Actions.loadEditServer, this.loadEditServer);
         this.listenTo(Shell_Actions.loadRegions, this.loadRegions);
         this.listenTo(Shell_Actions.loadRegionDashboard, this.loadRegionDashboard);
         this.listenTo(Shell_Actions.loadHeatmapQuery, this.loadHeatmapQuery);
@@ -24,16 +25,15 @@ module.exports = Reflux.createStore({
         this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
 
         this.listenTo(Shell_Actions.loadRegions_View, this.loadRegions_View);
-
-        
     },
 
-    connectWs: function(server_url) {
+    connectWs: function(server_url, server_port) {
         // Check if socket is open
         if(ws.state == 'closed') {
             ws.server_url = server_url;
+            ws.server_port = server_port;
 
-            ws.socket = new WebSocket("ws://" + ws.server_url + "/ws");
+            ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
 
             ws.socket.onopen = function() { WebSocket_Actions.open() };
             ws.socket.onclose = function(){ WebSocket_Actions.close() };
@@ -81,7 +81,11 @@ module.exports = Reflux.createStore({
         this.trigger({"msg_type" : "change_page", "msg" : {"page" : "add_server", "slide_dir" : trans}});
     },
 
-    loadRegions: function(server_url) {
+    loadEditServer: function(trans, server_data) {
+        this.trigger({"msg_type" : "change_page_edit", "msg" : {"page" : "edit_server", "slide_dir" : trans, "page_data": server_data}});
+    },
+
+    loadRegions: function(server_url, server_port) {
         if(ws.state == 'open') {
             if(ws.server_url == server_url) {
                 // alert(ws.socket.readyState);
@@ -90,12 +94,12 @@ module.exports = Reflux.createStore({
 
             else{
                 ws.socket.close();
-                this.connectWs(server_url);
+                this.connectWs(server_url, server_port);
             }
         }
 
         else{
-            this.connectWs(server_url);
+            this.connectWs(server_url, server_port);
         }
         
     },

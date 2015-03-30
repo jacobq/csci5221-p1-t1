@@ -18,7 +18,10 @@ var Header_View = require('./header.view.jsx');
 var Content_View = require('./content.view.jsx');
 
 var Server_View = require('./servers.view.jsx');
+
 var Add_Server_View = require('./servers/add_server.view.jsx');
+var Edit_Server_View = require('./servers/edit_server.view.jsx');
+
 var Region_View = require('./regions.view.jsx');
 var Region_Dashboard_View = require('./region_dashboard.view.jsx');
 
@@ -34,43 +37,27 @@ var Shell = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
-        return {current_page: 'server_list', selected:null, slide_dir: 'left', v_slide_state: 'down', slide:"left"};
+        return {current_page: 'server_list', selected:null, slide_dir: 'left', v_slide_state: 'down', slide:"left", 'page_data': null};
     },
 
     
     onStatusChange: function(data) {
+
         if(data.msg_type == "change_page") {
+            this.setState({
+                slide_dir: data.msg.slide_dir,
+                current_page: data.msg.page,
+                page_data: null
+            });
+        }
 
-            
-            // Change Dir
-            // if((this.state.current_page === 'region_list' && data.msg === 'server_list') ||
-            //     (this.state.current_page === 'region_dashboard' && data.msg === 'server_list') ||
-            //     (this.state.current_page === 'region_dashboard' && data.msg === 'region_list')) {
-            //     this.setState({
-            //         slide_dir: "right",
-            //         current_page: data.msg.page
-            //     });
-            // }
+        else if(data.msg_type == "change_page_edit"){
+            this.setState({
+                slide_dir: data.msg.slide_dir,
+                current_page: data.msg.page,
+                page_data: data.msg.page_data
 
-            // else {
-                
-                // Check for up/down slide
-                // if(data.msg.slide_dir === 'up') {
-                //     this.setState({
-                //         v_slide_state: 'up',
-                //         slide_dir: data.msg.slide_dir,
-                //         current_page: data.msg.page
-                //     });
-                // }
-
-                // else{
-                    this.setState({
-                        // v_slide_state: 'down',
-                        slide_dir: data.msg.slide_dir,
-                        current_page: data.msg.page
-                    });
-                // }
-            // }
+            })
         }
     },
 
@@ -129,7 +116,6 @@ var Shell = React.createClass({
             trans = "slideVU";
         }
 
-
         if(this.state.slide_dir === 'down'){
             trans = "slideVD";
         }
@@ -137,14 +123,17 @@ var Shell = React.createClass({
         return (<div style={this.style_base}>
                     <Header_View selected={this.state.selected}/>
                     
-                    
                     <ReactCSSTransitionGroup transitionName={trans}>
                         { this.state.current_page == 'server_list' ? <Server_View /> : null }
                     </ReactCSSTransitionGroup>
 
                     <ReactCSSTransitionGroup transitionName={trans}>
-                        { this.state.current_page == 'add_server' ? <Add_Server_View /> : null } 
+                        { this.state.current_page == 'add_server' ? <Add_Server_View page_mode="create" /> : null } 
                     </ReactCSSTransitionGroup>  
+
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'edit_server' ? <Add_Server_View page_mode="edit" page_data={this.state.page_data} /> : null } 
+                    </ReactCSSTransitionGroup>
                     
                     <ReactCSSTransitionGroup transitionName={trans}>
                         { this.state.current_page == 'region_list' ? <Region_View /> : null }   
@@ -157,8 +146,6 @@ var Shell = React.createClass({
                     { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View /> : null }
                     { this.state.current_page == 'null' ?<Content_View slideUp={this.state.content_slide_up == true ? 88 : null}/> : null }
                 </div>);
-
-
     }
 });
 

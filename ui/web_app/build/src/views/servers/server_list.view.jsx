@@ -28,14 +28,19 @@ module.exports = React.createClass({
             server_list: data
         });
     },
-    
+    componentWillMount: function() {
+        this.listenTo(Server_Store, this.onStatusChange);
+    },
+
     componentDidMount: function() {
         Debug("componentDidMount");
 
-        this.listenTo(Server_Store, this.onStatusChange);
+        Server_Actions.request();
 
-        Server_Actions.register({'server_id' : 'test_1', 'server_name' : 'Localhost', 'server_url' : 'localhost:8888'})
-        Server_Actions.register({'server_id' : 'test_2', 'server_name' : 'Locnnalhost', 'server_url' : '127.0.0.1:8888'})
+        
+
+        // Server_Actions.register({'server_id' : 'test_1', 'server_name' : 'Localhost', 'server_url' : 'localhost' ,'server_port' : 8888})
+        // Server_Actions.register({'server_id' : 'test_2', 'server_name' : 'Locnnalhost', 'server_url' : '127.0.0.1', 'server_port': 8888})
     },
 
     componentWillUnmount: function() {
