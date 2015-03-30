@@ -1,6 +1,4 @@
 # This script runs on the server to periodically check for updates (via git repository) and apply them
-# To install depdencies run:
-#   pip install gitpython
 
 import datetime
 import os
