@@ -34,9 +34,7 @@ class WebsocketHandler(websocket.WebSocketHandler):
 		data = json.loads(message)
 
 		if(data['message_type'] == 'getRegionList'):
-			# Get Region list
-			# region_list = 
-			self.write_message(json.dumps(self.getRegionList()))
+			self.getRegionList()
 
 		elif(data['message_type'] == 'startStreamingData'):
 			print "stream start"
@@ -95,7 +93,9 @@ class WebsocketHandler(websocket.WebSocketHandler):
 	def on_close(self):
 		print "WebSocket closed"
 		self.stream_job.remove()
-
+	
+	@asynchronous
+	@gen.coroutine
 	def getRegionList(self): 
 		# print "getRegionList"
 
@@ -106,34 +106,37 @@ class WebsocketHandler(websocket.WebSocketHandler):
 		
 		cursor = db.regions.find()
 
-		for document in (yield cursor.to_list(length=100)):
-			# Change ObjectID to string
-			document['id'] = str(document['_id'])
+		# for document in (yield cursor.to_list(length=100)):
+		# 	# Change ObjectID to string
+		# 	document['id'] = str(document['_id'])
 
-			# Remove ObjectID object
-			del document['_id']
+		# 	# Remove ObjectID object
+		# 	del document['_id']
 
-			# Append region to region list
-			region_list.append(document)
+		# 	# Append region to region list
+		# 	region_list.append(document)
 			
 
-		# region_1 = {}
+		region_1 = {}
 
-		# region_1['id'] = 1
-		# region_1['type'] = 'rectangle'
-		# region_1['channels'] = ['moisture']
-		# region_1['name'] = ['Region 1']
-		# region_1['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+		region_1['id'] = 1
+		region_1['type'] = 'rectangle'
+		region_1['channels'] = ['moisture']
+		region_1['name'] = ['Region 1']
+		region_1['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
 
-		# region_2 = {}
+		region_2 = {}
 
-		# region_2['id'] = 2
-		# region_2['type'] = 'rectangle'
-		# region_2['channels'] = ['moisture']
-		# region_2['name'] = ['Region 2']
-		# region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+		region_2['id'] = 2
+		region_2['type'] = 'rectangle'
+		region_2['channels'] = ['moisture']
+		region_2['name'] = ['Region 2']
+		region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
 
-		return {'message_type': 'getRegionList_Response', 'region_list' : region_list}
+		region_list.append(region_1)
+		region_list.append(region_2)
+
+		self.write_message(json.dumps({'message_type': 'getRegionList_Response', 'region_list' : region_list}))
 
 	def getHeatmapBounds(self, region_id): 
 		region_bounds = {}
