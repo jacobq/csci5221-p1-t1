@@ -97,24 +97,43 @@ class WebsocketHandler(websocket.WebSocketHandler):
 		self.stream_job.remove()
 
 	def getRegionList(self): 
-		print "getRegionList"
-		region_1 = {}
+		# print "getRegionList"
 
-		region_1['id'] = 1
-		region_1['type'] = 'rectangle'
-		region_1['channels'] = ['moisture']
-		region_1['name'] = ['Region 1']
-		region_1['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+		# Get reigons from database
+		region_list = []
+		
+		db = self.settings['db']
+		
+		cursor = db.regions.find()
 
-		region_2 = {}
+		for document in (yield cursor.to_list(length=100)):
+			# Change ObjectID to string
+			document['id'] = str(document['_id'])
 
-		region_2['id'] = 2
-		region_2['type'] = 'rectangle'
-		region_2['channels'] = ['moisture']
-		region_2['name'] = ['Region 2']
-		region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+			# Remove ObjectID object
+			del document['_id']
 
-		return {'test':'test', 'message_type': 'getRegionList_Response', 'region_list' : [ region_1, region_2 ]}
+			# Append region to region list
+			region_list.append(document)
+			
+
+		# region_1 = {}
+
+		# region_1['id'] = 1
+		# region_1['type'] = 'rectangle'
+		# region_1['channels'] = ['moisture']
+		# region_1['name'] = ['Region 1']
+		# region_1['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+
+		# region_2 = {}
+
+		# region_2['id'] = 2
+		# region_2['type'] = 'rectangle'
+		# region_2['channels'] = ['moisture']
+		# region_2['name'] = ['Region 2']
+		# region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
+
+		return {'message_type': 'getRegionList_Response', 'region_list' : region_list}
 
 	def getHeatmapBounds(self, region_id): 
 		region_bounds = {}
