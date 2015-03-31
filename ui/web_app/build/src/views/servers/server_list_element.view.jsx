@@ -7,6 +7,8 @@
 var React = require('react/addons');
 var Reflux = require('reflux');
 
+var _ = require('underscore');
+
 var TWEEN = require('tween.js');
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
@@ -30,22 +32,30 @@ module.exports = React.createClass({
 
     checkServer: function() {
 
-        var _this = this;
+        var self = this;
 
         var server_id = this.props.server_data.server_id;
-
-        var ping = $.ajax({
-            url: 'http://' + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
-        });
-
+        
+        //~ Null Port
+        if(this.props.server_data.server_port === null) {
+			var ping = $.ajax({
+				url: "https://" + this.props.server_data.server_url + "/heartbeat",
+			});
+		}
+		
+		else {
+			var ping = $.ajax({
+				url: "https://" + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
+			});
+		}
+		
         ping.done(function( msg ) {
             Server_Actions.statusUpdate(server_id, true);
             
-            _this.setState({
+            self.setState({
                 server_state: msg.status,
                 region_count: msg.region_count,
             })
-
         });
 
         ping.fail(function( jqXHR, textStatus ) {
@@ -55,13 +65,12 @@ module.exports = React.createClass({
 
 
     getInitialState: function() {
-        return {currentStatus: false, expanded: false, style_base: this.style_base, expanded_height: 165, server_state: null, region_count: null};
+        return {currentStatus: false, expanded: false, style_base: this.style_base, expanded_height: 260, server_state: null, region_count: null};
     },
 
     componentDidMount: function() {
         Debug("componentDidMount");
 
-        // Move to own function for reuse
         this.checkServer();
     },
 
@@ -86,7 +95,7 @@ module.exports = React.createClass({
     },
 
     style_button_group: {
-        'height':30,
+        'height':35,
         'width':'100%',
         
         
@@ -101,7 +110,7 @@ module.exports = React.createClass({
 
     style_button_edit: {
         'cursor':'default',
-        'height':25,
+        'height':30,
         'width':'50%',
         'position': 'relative',
         'top':0,
@@ -117,7 +126,7 @@ module.exports = React.createClass({
 
     style_button_connect: {
         'cursor':'default',
-        'height':25,
+        'height':30,
         'width':'50%',
         'position': 'relative',
         'top':0,
@@ -210,7 +219,7 @@ module.exports = React.createClass({
     style_info: {
 
         
-        'height': 85,
+        'height': 175,
         'width': '100%',
         'margin': 0,
         'padding': 0,
@@ -221,11 +230,11 @@ module.exports = React.createClass({
         'background' : 'rgba(87,116,131,1.0)',
     },
 
-    style_info_list_left: {
+    style_info_list: {
 
         
         'height': '100%',
-        'width': '45%',
+        'width': '92%',
         'margin': 0,
         'padding': 0,
 
@@ -233,32 +242,11 @@ module.exports = React.createClass({
         
         
         'fontFamily': '"Arial Black", Gadget, sans-serif',
-        'fontSize': '0.75em',
+        'fontSize': '0.65em',
         // 'background' : 'rgba(2,25,5,1.0)',
         'listStyle':'none',
         'display':'block',
         'float':'left',
-    },
-
-    style_info_list_right: {
-
-        
-        'height': '100%',
-        'width': '45%',
-        'margin': 0,
-        'padding': 0,
-
-        'paddingLeft':'1%',
-        
-        'marginRight':'4%',
-        
-        'fontFamily': '"Arial Black", Gadget, sans-serif',
-        'fontSize': '0.75em',
-        // 'background' : 'rgba(2,25,5,1.0)',
-        'listStyle':'none',
-        'display':'block',
-        'float':'right',
-        
     },
 
     style_info_list_item: {
@@ -280,10 +268,6 @@ module.exports = React.createClass({
         'height': 25,
         'margin': 0,
         'padding': 0,
-        
-        // 'background' : 'rgba(255,255,255,1.0)',
-        
-        
 
         'float':'left',
     },
@@ -296,10 +280,6 @@ module.exports = React.createClass({
         'padding': 0,
         'marginLeft':5,
         
-        // 'background' : 'rgba(255,255,255,1.0)',
-        
-        
-
         'float':'left',
     },
 
@@ -309,98 +289,50 @@ module.exports = React.createClass({
             this.setState({
                 expanded: true,
             })
-                var test = this;
-                var tween = new TWEEN.Tween( { height : 45, 
-                                                  
-                                                } )
-                        .to( { height : this.state.expanded_height }, 500 )
-                        .easing( TWEEN.Easing.Linear.None )
-                        .onUpdate( function () {
-
-
-
-                            
-
-                            var updatedStyle = _.clone(test.state.style_base);
-
-                            updatedStyle.height = this.height;
-
-
-
-
-                                // updatedStyle.height = this.height;
-                                // updatedStyle.width = this.width;
-                                
-                                // updatedStyle.marginLeft = this.marginLeft;
-                                // updatedStyle.marginTop = this.marginTop;
-
-                                // updatedStyle.paddingTop = this.paddingTop;
-
-                                // updatedStyle.fontSize = this.fontSize;
-
-                                test.setState({
-                                    style_base: updatedStyle
-                                });
-
-                            // updatedStyle.color = 'rgba(' + Math.round(this.r) + ',' + Math.round(this.g) + ',' + Math.round(this.b) + ',' + 1.0 + ')';
-
-                            
-                } );
+            
+            var self = this;
+			var tween = new TWEEN.Tween( { height : 45, })
+				.to( { height : this.state.expanded_height }, 500 )
+                .easing( TWEEN.Easing.Linear.None )
+                .onUpdate( function () {
+					var updatedStyle = _.clone(self.state.style_base);
+					
+					updatedStyle.height = this.height;
+									
+                    self.setState({
+						style_base: updatedStyle
+					});
+                });
 
                 tween.start();
 
                 animate();
         }
 
-        else{
+		// Is Expanded
+        else {
             this.setState({
                 expanded: false,
             })
-                var test = this;
-                var tween = new TWEEN.Tween( { height : this.state.expanded_height, 
-                                                  
-                                                } )
-                        .to( { height : 45 }, 500 )
-                        .easing( TWEEN.Easing.Linear.None )
-                        .onUpdate( function () {
+                var self = this;
+                var tween = new TWEEN.Tween( { height : this.state.expanded_height })
+					.to( { height : 45 }, 500 )
+                    .easing( TWEEN.Easing.Linear.None )
+                    .onUpdate( function () {
+						
+						var updatedStyle = _.clone(self.state.style_base);
 
+                        updatedStyle.height = this.height;
 
-
-                            
-
-                            var updatedStyle = _.clone(test.state.style_base);
-
-                            updatedStyle.height = this.height;
-
-
-
-
-                                // updatedStyle.height = this.height;
-                                // updatedStyle.width = this.width;
-                                
-                                // updatedStyle.marginLeft = this.marginLeft;
-                                // updatedStyle.marginTop = this.marginTop;
-
-                                // updatedStyle.paddingTop = this.paddingTop;
-
-                                // updatedStyle.fontSize = this.fontSize;
-
-                                test.setState({
-                                    style_base: updatedStyle
-                                });
-
-                            // updatedStyle.color = 'rgba(' + Math.round(this.r) + ',' + Math.round(this.g) + ',' + Math.round(this.b) + ',' + 1.0 + ')';
-
-                            
-                } );
+                        self.setState({
+							style_base: updatedStyle
+						});
+				});
 
                 tween.start();
 
                 animate();
-
         }
-        
-        // Shell_Actions.loadRegions(this.props.server_data.server_url);
     },
 
     handle_Connect_TouchEnd: function(evt) {
@@ -419,35 +351,31 @@ module.exports = React.createClass({
 
         return (<li style={this.state.style_base} onTouchEnd={this.handleTouchEnd}>
 
-            <div style = {this.style_icon}>&#xf233;</div>
-            <div style={this.style_title}>{this.props.server_data.server_name} : { this.props.server_data.online == true ? "Online" : "Offline"}  
-            </div>
+					<div style = {this.style_icon}>&#xf233;</div>
+						<div style={this.style_title}>{this.props.server_data.server_name} : { this.props.server_data.online == true ? "Online" : "Offline"}  
+					</div>
 
-            <ReactCSSTransitionGroup transitionName="example">                
-                {this.state.expanded === true ?
-                    <div style={this.style_info}>
-                        <ul style={this.style_info_list_left}>
-                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server ID:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_id}</div></li>
-                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server URL:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_url}</div></li>
-                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Port:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_port}</div></li>
-                        </ul>
-
-                        <ul style={this.style_info_list_right}>
-                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Status:</div><div style={this.style_info_list_item_data}> {this.state.server_state}</div></li>
-                            <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Region Count:</div><div style={this.style_info_list_item_data}> {this.state.region_count}</div></li>
-                        </ul>
-                </div> : null } 
-            </ReactCSSTransitionGroup>     
-              
-
-            <ReactCSSTransitionGroup transitionName="example">
-                {this.state.expanded === true ?
-                    <div style={this.style_button_group}>
-                        <div onTouchEnd={this.handle_Edit_TouchEnd} style={this.style_button_edit}><span style={this.style_fa_button}>&#xf040;</span>Edit</div>
-                        <div onTouchEnd={this.handle_Connect_TouchEnd} style={this.style_button_connect}>Connect<span style={this.style_fa_button}>&#xf045;</span></div>
-                    </div> : null } 
-            </ReactCSSTransitionGroup>                  
-
-            </li>);
+					<ReactCSSTransitionGroup transitionName="example">                
+						{this.state.expanded === true ?
+							<div style={this.style_info}>
+								<ul style={this.style_info_list}>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Name:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_name}</div></li>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server ID:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_id}</div></li>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server URL:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_url}</div></li>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Port:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_port}</div></li>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Status:</div><div style={this.style_info_list_item_data}> {this.state.server_state}</div></li>
+									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Region Count:</div><div style={this.style_info_list_item_data}> {this.state.region_count}</div></li>
+								</ul>
+						</div> : null } 
+					</ReactCSSTransitionGroup>     
+					  
+					<ReactCSSTransitionGroup transitionName="example">
+						{this.state.expanded === true ?
+							<div style={this.style_button_group}>
+								<div onTouchEnd={this.handle_Edit_TouchEnd} style={this.style_button_edit}><span style={this.style_fa_button}>&#xf040;</span>Edit</div>
+								<div onTouchEnd={this.handle_Connect_TouchEnd} style={this.style_button_connect}>Connect<span style={this.style_fa_button}>&#xf045;</span></div>
+							</div> : null } 
+					</ReactCSSTransitionGroup>                  
+				</li>);
     }
 });

@@ -200,7 +200,7 @@ module.exports = React.createClass({
                             <input onChange={this.handle_ServerName_Input} style={this.style_input} placeholder="Server Name" value={this.state.server_name}></input>
                             <input onChange={this.handle_ServerID_Input} style={this.style_input} placeholder={this.state.server_name == null ? "Server ID" : this.state.server_name} value={this.state.server_id}></input>
                             <input onChange={this.handle_ServerURL_Input} style={this.style_input} placeholder="Server URL/IP Address" value={this.state.server_url}></input>
-                            <input onChange={this.handle_ServerPort_Input} style={this.style_input} placeholder="Port" value={this.state.server_port}></input>
+                            <input onChange={this.handle_ServerPort_Input} style={this.style_input} placeholder="Port (Optional)" value={this.state.server_port}></input>
                         </div>
                         <div onClick={this.props.page_mode === "create" ? this.handle_Submit_OnTouchEnd : this.handle_Save_OnTouchEnd} style={this.style_button_submit}>
                             <span style={this.style_text}>{this.props.page_mode === "create" ? "Submit" : "Save"}<span style={this.style_fa}>&#xf058;</span></span>

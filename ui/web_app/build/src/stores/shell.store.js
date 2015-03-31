@@ -33,8 +33,14 @@ module.exports = Reflux.createStore({
             ws.server_url = server_url;
             ws.server_port = server_port;
 
-            ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
-
+			if(this.props.server_data.server_port === null) {
+				ws.socket = new WebSocket("ws://" + ws.server_url + "/ws");
+			}
+		
+			else {
+				ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
+			}
+            
             ws.socket.onopen = function() { WebSocket_Actions.open() };
             ws.socket.onclose = function(){ WebSocket_Actions.close() };
             ws.socket.onmessage = function(evt){ WebSocket_Actions.message(evt) };
@@ -49,6 +55,8 @@ module.exports = Reflux.createStore({
     wsOnOpen: function() {
         // Replace with client ident/mac and other bootstraping
         // authent
+        
+        alert("asdfasdfasdfasdf");
         ws.state = 'open';
     
         ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));
