@@ -15,10 +15,12 @@ class HeartbeatHandler(RequestHandler):
 	@gen.coroutine
 	def get(self):
 		# Use motor to get region count
-		client = motor.MotorClient('mongodb://localhost:27017')
-		db = client["csci5221"]
-		working_collection = db["regions"]
+		# client = motor.MotorClient('mongodb://localhost:27017')
+		# db = client["csci5221"]
+
+		db = self.settings['db']
+		# working_collection = db["regions"]
 		
-		count = yield working_collection.find().count()
+		count = yield db.regions.count()
 		
 		self.write({'status' : 'online', 'region_count' : count})
