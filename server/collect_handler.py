@@ -1,9 +1,11 @@
 # This module is responsible for receiving and storing incoming sensor/measurement data
 
 import json
+import datetime
 import logging
 from tornado import gen
 from tornado.web import RequestHandler
+from tornado.web import asynchronous
 
 # Example of expected form of input data:
 #{
@@ -24,7 +26,6 @@ from tornado.web import RequestHandler
 #        "devices": [{
 #                "id": 1,
 #                "type": 1,
-#                "name": "Probe 1",
 #                "region": 1,
 #                "location": {
 #                    "x": 0,
@@ -33,7 +34,6 @@ from tornado.web import RequestHandler
 #            }, {
 #                "id": 2,
 #                "type": 1,
-#                "name": "Probe 2",
 #                "region": 1,
 #                "location": {
 #                    "x": 1,
@@ -43,7 +43,7 @@ from tornado.web import RequestHandler
 #        ]
 #    },
 #    "measurements": [{
-#            "id": 1,
+#            "deviceId": 1,
 #            "data": [{
 #                    "time": "2015-02-11T18:59:29.729240",
 #                    "t": 2200,
@@ -55,8 +55,7 @@ from tornado.web import RequestHandler
 #                }
 #            ]
 #        }, {
-#            "id": 2,
-#            "data": []
+#            // ...
 #        }
 #    ]
 #}
@@ -89,44 +88,29 @@ def is_message_structure_ok(data):
 	
 @gen.coroutine	
 def add_new_sensor_information(data, db):
+	# If a new type of sensor is being used then add it to the sensor_types collection
 	for type in data["definitions"]["types"]:
 		try:
-			results = yield db.sensors.find_one({"id": type["id"]})
+			results = yield db.sensor_types.find_one({"id": type["id"]})
 		except Exception, e:
 			logging.warning(e.getMessage())
 		if results is None:
-			logging.info("Inserting record for sensor: " + json.dumps(type))
-			db.sensors.insert(type)
+			logging.info("Inserting record for sensor type: " + json.dumps(type))
+			db.sensor_types.insert(type)
 
+	# If a new sensor/device is being used then add it to the sensors collection
+	for sensor in data["definitions"]["devices"]:
+		try:
+			results = yield db.sensors.find_one({"id": sensor["id"]})
+		except Exception, e:
+			logging.warning(e.getMessage())
+		if results is None:
+			logging.info("Inserting record for sensor: " + json.dumps(sensor))
+			db.sensors.insert(sensor)
 
-#@gen.coroutine
-#def is_message_consistent_with_db(data, db):
-#	for type in data["definitions"]["types"]:
-#		try:
-#			match = yield db.sensors.find_one({"id": type["id"]})
-#			logging.info("Match is: " + match)
-#		except Exception, e:
-#			logging.warn(e.getMessage())
-#		if match.count() < 1:
-#			logging.info("Missing sensor information")
-#			return False
-#		if match["name"] != type["name"]:
-#			logging.info("Name mismatch")
-#			return False
-#
-#		if len(match["channels"]) != len(type["channels"]):
-#			logging.info("Different numbers of channels")
-#			return False
-#			
-#		for channel in type["channels"]:
-#			if channel["name"] :
-#				logging.info("Name mismatch")
-#				return False
-#
-#	return True
-
-	
+			
 class CollectHandler(RequestHandler):
+	@asynchronous
 	def post(self):	
 		db = self.settings['db']
 		try: 
@@ -136,11 +120,15 @@ class CollectHandler(RequestHandler):
 		if not is_message_structure_ok(data):
 			self.send_error(500, reason="Invalid data received")
 		add_new_sensor_information(data, db)
-		#if not is_message_consistent_with_db(data, db):
-		#	self.send_error(500, reason="Received data was not consistent with database")
 		
-		# TODO: Add locations & sensor IDs regions collection
+		def cb(result, error):
+			self.write({"status": "success" if error is None else "error"})
+			self.finish()
 		
-		db.measurements.insert(data["measurements"])
-		self.write({"status": "success", "numberOfMeasurementsSaved": len(data["measurements"])})
+		for deviceMeasurements in data["measurements"]:
+			deviceId = deviceMeasurements["deviceId"]
+			for measurement in deviceMeasurements["data"]:
+				measurement["deviceId"] = deviceId
+				measurement["time"] = datetime.datetime.strptime(measurement["time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+			db.measurements.insert(deviceMeasurements["data"], callback=cb)
 		
