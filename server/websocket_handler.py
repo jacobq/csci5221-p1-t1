@@ -15,6 +15,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from tornado import websocket
 
 class WebsocketHandler(websocket.WebSocketHandler):
+
+	
 	def some_job(self):
 		print time.strftime("%H:%M:%S")
 		data = {'time' : str(time.strftime("%H:%M:%S")), 'data' : random.randint(100,200)}
