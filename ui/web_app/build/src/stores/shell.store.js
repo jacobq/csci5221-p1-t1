@@ -21,6 +21,7 @@ module.exports = Reflux.createStore({
         this.listenTo(Shell_Actions.loadHeatmapQuery, this.loadHeatmapQuery);
 
         this.listenTo(WebSocket_Actions.open, this.wsOnOpen);
+        this.listenTo(WebSocket_Actions.error, this.wsOnError);
         this.listenTo(WebSocket_Actions.close, this.wsOnClose);
         this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
 
@@ -33,15 +34,16 @@ module.exports = Reflux.createStore({
             ws.server_url = server_url;
             ws.server_port = server_port;
 
-			if(this.props.server_data.server_port === null) {
-				ws.socket = new WebSocket("ws://" + ws.server_url + "/ws");
+			if(server_port === null) {
+				ws.socket = new WebSocket("wss://" + ws.server_url + "/ws");
 			}
 		
 			else {
-				ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
+				ws.socket = new WebSocket("wss://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
 			}
-            
+			            
             ws.socket.onopen = function() { WebSocket_Actions.open() };
+            ws.socket.onerror = function() { WebSocket_Actions.error() };
             ws.socket.onclose = function(){ WebSocket_Actions.close() };
             ws.socket.onmessage = function(evt){ WebSocket_Actions.message(evt) };
         }
@@ -56,12 +58,20 @@ module.exports = Reflux.createStore({
         // Replace with client ident/mac and other bootstraping
         // authent
         
-        alert("asdfasdfasdfasdf");
         ws.state = 'open';
     
         ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));
     },
 
+
+    wsOnError: function(ev) {
+        // Replace with client ident/mac and other bootstraping
+        // authent
+        
+        alert("error");
+        //~ ws.state = 'error';
+   
+    },
     wsOnClose: function() {
         ws.state = 'closed';
         ws.server_url = null;
