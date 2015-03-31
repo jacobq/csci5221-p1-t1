@@ -99,17 +99,17 @@ class WebsocketHandler(websocket.WebSocketHandler):
 		print "WebSocket closed"
 		self.stream_job.remove()
 	
-	@asynchronous
-	@gen.coroutine
+	# @asynchronous
+	# @gen.coroutine
 	def getRegionList(self): 
 		# print "getRegionList"
 
 		# Get reigons from database
 		region_list = []
 		
-		db = self.settings['db']
+		# db = self.settings['db']
 		
-		cursor = db.regions.find()
+		# cursor = db.regions.find()
 
 		# for document in (yield cursor.to_list(length=100)):
 		# 	# Change ObjectID to string
