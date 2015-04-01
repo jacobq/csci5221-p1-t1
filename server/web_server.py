@@ -65,7 +65,7 @@ if __name__ == "__main__":
 	logging.getLogger().setLevel(logging.INFO)
 
 	# Connect to MongoDB
-	db = motor.MotorClient('localhost', 27017).test
+	db = motor.MotorClient('localhost', 27017).csci5221
 	settings.update({"db": db})
 	
 	application = create_application()
