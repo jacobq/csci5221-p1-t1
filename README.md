@@ -23,6 +23,7 @@ and [execution plan](docs/design/Execution%20Plan.pdf).
 | HTTP Method | Path       | Description                                                                              |
 |-------------|------------|------------------------------------------------------------------------------------------|
 | `GET`       | `/`        | Simple sanity checks that server is responding                                           |
+| `GET`       | `/db_stats`| Shows how many items are in each MongoDB collection                                      |
 | `GET`       | `/version` | Attempts to run `git pull` to update the code from github then shows SHA for HEAD commit |
 | `POST`      | `/collect` | Store the measurement data from the body of the request inthe database                   |
 
