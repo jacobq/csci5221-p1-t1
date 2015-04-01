@@ -97,6 +97,7 @@
 
 import json
 import logging
+import time
 from datetime import datetime
 from tornado import gen
 from tornado.web import RequestHandler,asynchronous
@@ -127,8 +128,6 @@ def add_new_regions(regions, db):
 			#logging.info("Found matching region: ", match)
 			region_id = match["_id"]
 		region_map[local_region_id] = region_id
-	logging.info("add_new_regions, region_map:")
-	logging.info(region_map)
 	raise gen.Return(region_map) 
 	
 @gen.coroutine
@@ -148,8 +147,6 @@ def add_new_sensor_types(sensor_types, db):
 			#logging.info("Found matching sensor_type: ", match)
 			sensor_type_id = match["_id"]
 		sensor_type_map[local_sensor_type_id] = sensor_type_id
-	logging.info("add_new_sensor_types, sensor_type_map:")
-	logging.info(sensor_type_map)
 	raise gen.Return(sensor_type_map) 
 
 			
@@ -158,29 +155,29 @@ class CollectHandler(RequestHandler):
 	def post(self):	
 		db = self.settings['db']
 		try: 
-			data = json.loads(self.request.body)
+			post_data = json.loads(self.request.body)
 		except ValueError:
 			self.send_error(500, reason="Could not parse received data as JSON")
-		if not is_message_structure_ok(data):
+		if not is_message_structure_ok(post_data):
 			self.send_error(500, reason="Invalid data received")
-		region_map = yield add_new_regions(data["regions"], db)
-		sensor_type_map = yield add_new_sensor_types(data["sensor_types"], db)		
+		region_map = yield add_new_regions(post_data["regions"], db)
+		sensor_type_map = yield add_new_sensor_types(post_data["sensor_types"], db)		
 		
-		def cb(result, error):
-			self.write({"status": "success" if error is None else "error"})
-			self.finish()
 		
-		measurements_to_be_inserted = [];
-		for measurement in data["measurements"]:
+		for measurement in post_data["measurements"]:
 			region_id = region_map[measurement["region"]]
 			sensor_type_id = sensor_type_map[measurement["sensor_type"]]
 			x = measurement["location"]["x"]
 			y = measurement["location"]["y"]
-			sensor_id = yield db.sensors.find_one({"region": region_id, "location.x": x, "location.y": y})
-			if sensor_id is None:
+			sensor = yield db.sensors.find_one({"region": region_id, "location.x": x, "location.y": y})
+			if sensor is None:
 				sensor_id = yield db.sensors.insert({"region": region_id, "sensor_type_id": sensor_type_id, "location": {"x": x, "y": y}})
+			else:
+				sensor_id = sensor["_id"]
 			for point in measurement["data"]:
 				point["sensor_id"] = sensor_id
-				point["time"] = datetime.strptime(point["time"], "%Y-%m-%dT%H:%M:%S.%f")
-			measurements_to_be_inserted.append(measurement["data"])
-		db.measurements.insert(measurements_to_be_inserted, callback=cb)
+				#point["time"] = int(time.mktime(datetime.strptime(point["time"], "%Y-%m-%dT%H:%M:%S.%f").timetuple()))
+				point["time"] = datetime.strptime(point["time"], "%Y-%m-%dT%H:%M:%S.%f").isoformat()
+			db.measurements.insert(measurement["data"])
+		self.write({"status": "success"})
+		#self.finish()
