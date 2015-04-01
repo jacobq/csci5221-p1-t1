@@ -10,6 +10,7 @@ import motor
 
 from heartbeat_handler import HeartbeatHandler
 from collect_handler import CollectHandler
+from db_stats_handler import DBStatsHandler
 from websocket_handler import WebsocketHandler
 from version_handler import VersionHandler
  
@@ -56,6 +57,7 @@ def create_application():
 		(r'/', IndexHandler),
 		(r'/heartbeat', HeartbeatHandler),
 		(r'/collect/?', CollectHandler),
+		(r'/db_stats', DBStatsHandler),		
 		(r'/ws', WebsocketHandler),
 		(r'/version/?', VersionHandler)
 	],**settings)
