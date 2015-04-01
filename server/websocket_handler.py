@@ -57,17 +57,17 @@ class dataStream(object):
 			# self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
 	# @gen.coroutine
 	def startStream(self):
-		print "1"
+		print "ss 1"
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
 			# time = 
-			print "2"
+			print "ss 2"
 			if self.space == 'region':
 				self.sensors[channel_id] = []
 				# get region sensors by looking up all sensors in region
 				self.sensor_list = []
 
-				cursor = self.db.sensors.find({'region' : bson.ObjectID(self.space_id)}).limit(self.space_size)
+				cursor = self.db.sensors.find({'region' : bson.ObjectId(self.space_id)}).limit(self.space_size)
 				print "3"
 				
 
@@ -129,7 +129,7 @@ class dataStream(object):
     			# print "thread finished...exiting"
 
 
-		self.scheduler.add_job(self.runStream, 'interval', seconds=2)
+		# self.scheduler.add_job(self.runStream, 'interval', seconds=2)
 			# channels=self.channels,
 			# channel_name_map=self.channel_name_map,
 			# sensors=self.sensors,
