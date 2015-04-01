@@ -35,11 +35,11 @@ module.exports = Reflux.createStore({
             ws.server_port = server_port;
 
 			if(server_port === null) {
-				ws.socket = new WebSocket("ws://" + ws.server_url + "/ws");
+				ws.socket = new WebSocket("wss://" + ws.server_url + "/ws");
 			}
 		
 			else {
-				ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
+				ws.socket = new WebSocket("wss://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
 			}
 			            
             ws.socket.onopen = function() { WebSocket_Actions.open() };

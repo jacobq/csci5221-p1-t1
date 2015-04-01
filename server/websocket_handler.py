@@ -83,7 +83,7 @@ class dataStream(object):
 				# Pull data for all sensors
 				for sensor_id in self.sensors[channel_id]:
 					
-					cursor = self.db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", 1)]).limit(10)
+					cursor = self.db.measurements.find({'sensor_id' : sensor_id}).sort([("_id", 1)]).limit(10)
 
 					# db.test.find({"number": {"$gt": 1}}).sort([("number", 1), ("date", -1)])
 
