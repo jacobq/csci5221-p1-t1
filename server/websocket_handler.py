@@ -20,8 +20,6 @@ from tornado import websocket
 from tornado.web import asynchronous
 from tornado import gen
 
-import schedule
-
 import motor
 
 import pymongo
@@ -47,7 +45,7 @@ class dataStream(object):
 
 		self.stop = False
 
-		self.db = pymongo.MongoClient('localhost', 27017).test
+		self.db = pymongo.MongoClient('localhost', 27017).csci5221
 
 		self.channel_name_map = {
 			"moisture": "m",
@@ -55,23 +53,26 @@ class dataStream(object):
 		}
 
 			
-				# self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
-	@gen.coroutine
+			# self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
+	# @gen.coroutine
 	def startStream(self):
+		print "1"
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
 			# time = 
-
+			print "2"
 			if self.space == 'region':
 				self.sensors[channel_id] = []
 				# get region sensors by looking up all sensors in region
 				self.sensor_list = []
 
-				cursor = self.db.sensors.find({'region' : self.space_id})
+				cursor = self.db.sensors.find({'region' : self.space_id}).limit(self.space_size)
+				print "3"
+				
 
 				# Lookup and store all sensor id's
-				for document in cursor.to_list(length=self.space_size):
-					print "1"
+				for document in cursor:
+					
 					# Left as ObjectID object as opposed to string as there may be useful metadata
 					self.sensors[channel_id].append(document['_id'])
 					self.sensors[document['_id']] = {'latest': None}
@@ -81,11 +82,11 @@ class dataStream(object):
 				# Pull data for all sensors
 				for sensor_id in self.sensors[channel_id]:
 					
-					cursor = self.db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", 1)])
+					cursor = self.db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", 1)]).limit(10)
 
 					# db.test.find({"number": {"$gt": 1}}).sort([("number", 1), ("date", -1)])
 
-					for document in cursor.to_list(length=10):
+					for document in cursor:
 						print document['_id'].generation_time
 
 						self.averages[sensor_id].append(document)
@@ -127,11 +128,18 @@ class dataStream(object):
     			# print "thread finished...exiting"
 
 
-		self.scheduler.add_job((lambda: self.runStream(db=self.db,
-			channels=self.channels,
-			channel_name_map=self.channel_name_map,
-			sensors=self.sensors,
-			space=self.space)), 'interval', seconds=2)
+		self.scheduler.add_job(self.runStream, 'interval', seconds=2)
+			# channels=self.channels,
+			# channel_name_map=self.channel_name_map,
+			# sensors=self.sensors,
+			# space=self.space)), 'interval', seconds=2)
+
+
+		# self.scheduler.add_job((lambda: self.runStream(db=self.db,
+			# channels=self.channels,
+			# channel_name_map=self.channel_name_map,
+			# sensors=self.sensors,
+			# space=self.space)), 'interval', seconds=2)
 
 		# schedule.every(0.5).minutes.do(self.runStream)
 		# schedule.run_pending()
@@ -139,9 +147,9 @@ class dataStream(object):
 	def bam(self,b,e):
 		print 'rawer'
 
-
-	@gen.coroutine
-	def runStream(self, db, channels, channel_name_map, sensors, space):	
+#db, channels, channel_name_map, sensors, space
+	# @gen.coroutine
+	def runStream(self):	
 	
 		print 
 		print 
@@ -151,26 +159,29 @@ class dataStream(object):
 
 
 		
-		for channel in channels:
-			channel_id = channel_name_map[channel]
+		for channel in self.channels:
+			channel_id = self.channel_name_map[channel]
 				# time = 
-			if space == 'region':
+			if self.space == 'region':
 					# Pull data for all sensors
-				print "1"
+				
 				sum = 0
 				count = 0
 			
-				for sensor_id in sensors:
-					print "2"
+				for sensor_id in self.sensors:
+					
 						
-					cursor = db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", -1)])
+					cursor = self.db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", -1)]).limit(1)
+
+					# print cursor
 					# .limit(10).to_list(length=10, callback=rawr)
 					# .limit(1).to_list(length=1, callback=self.bam)
 			
 					# .limit(10)
             # .to_list(length=10, self._got_messages))
 
-					for document in (yield cursor.to_list(length=1)):
+					for document in cursor:
+
 						# print "3"
 						# if self.sensors[sensor_id]['latest'] < document['_id'].generation_time:
 					# 		# self.sensors[sensor_id]['latest'] = document['_id'].generation_time
@@ -181,7 +192,11 @@ class dataStream(object):
 						# print sum
 				
 				# print
-				print sum
+				avg = sum/self.space_size
+
+				data = {'time' : "", 'data' : avg}
+				msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
+				self.ws.write_message(json.dumps(msg))
 				# print
 
 				# print "4"
@@ -301,11 +316,6 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			
 			self.write_message(json.dumps(self.getHeatmapBounds(data['region_id'])))
 
-
-			
-
-			
-
 		# print message
 
 		# print json.loads(message)['test']
@@ -348,6 +358,8 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			del document['_id']
 
 			count = yield db.sensors.find({"region" : document['id']}).count()
+
+			print count
 
 			document['sensor_count'] = count
 
