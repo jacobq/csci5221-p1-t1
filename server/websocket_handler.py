@@ -14,12 +14,17 @@ import random
 import threading
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.tornado import TornadoScheduler
 from tornado import websocket
 
 from tornado.web import asynchronous
 from tornado import gen
 
+import schedule
+
 import motor
+
+import pymongo
 
 class dataStream(object):
 	# ass self history
@@ -29,16 +34,20 @@ class dataStream(object):
 		self.space_id = space_id
 		self.space_size = space_size 
 
-		self.db = db
+		# self.db = db
 		self.ws = ws
 
-		self.scheduler = BackgroundScheduler()
+		self.scheduler = TornadoScheduler()
 		self.scheduler.start()
 		self.stream_job = None
 
 		self.current = {}
 		self.sensors = {}
 		self.averages = {}
+
+		self.stop = False
+
+		self.db = pymongo.MongoClient('localhost', 27017).test
 
 		self.channel_name_map = {
 			"moisture": "m",
@@ -61,7 +70,8 @@ class dataStream(object):
 				cursor = self.db.sensors.find({'region' : self.space_id})
 
 				# Lookup and store all sensor id's
-				for document in (yield cursor.to_list(length=self.space_size)):
+				for document in cursor.to_list(length=self.space_size):
+					print "1"
 					# Left as ObjectID object as opposed to string as there may be useful metadata
 					self.sensors[channel_id].append(document['_id'])
 					self.sensors[document['_id']] = {'latest': None}
@@ -75,7 +85,7 @@ class dataStream(object):
 
 					# db.test.find({"number": {"$gt": 1}}).sort([("number", 1), ("date", -1)])
 
-					for document in (yield cursor.to_list(length=10)):
+					for document in cursor.to_list(length=10):
 						print document['_id'].generation_time
 
 						self.averages[sensor_id].append(document)
@@ -110,56 +120,68 @@ class dataStream(object):
 				# print self.averages
 				# print self.sensors
 
-				self.stream_job = threading.Thread(target = self.runStream, args = (self.channels, self.space, self.sensors, self.db, self.ws))
-				self.stream_job.start()
-    			self.stream_job.join()
-    			print "thread finished...exiting"
-				# self.scheduler.add_job(self.runStream, 'interval', seconds=2)
+				# self.stream_job = threading.Thread(target = self.runStream, args = (self.channels, self.space, self.sensors, self.db, self.ws))
+				# self.stream_job.daemon = True
+				# self.stream_job.start()
+    # 			self.stream_job.join()
+    			# print "thread finished...exiting"
+
+
+		self.scheduler.add_job((lambda: self.runStream(db=self.db,
+			channels=self.channels,
+			channel_name_map=self.channel_name_map,
+			sensors=self.sensors,
+			space=self.space)), 'interval', seconds=2)
+
+		# schedule.every(0.5).minutes.do(self.runStream)
+		# schedule.run_pending()
 
 	def bam(self,b,e):
 		print 'rawer'
-	# @gen.coroutine
-	def runStream(self, channels, space, sensors, db, ws):
+
+
+	@gen.coroutine
+	def runStream(self, db, channels, channel_name_map, sensors, space):	
+	
+		print 
+		print 
+		print 
+		print 
+		print 
+
+
 		
-			
-		db = self.db
-		print 
-		print 
-		print 
-		print 
-		print 
-
-		for channel in self.channels:
-			channel_id = self.channel_name_map[channel]
-			# time = 
-
-			if self.space == 'region':
-				# Pull data for all sensors
+		for channel in channels:
+			channel_id = channel_name_map[channel]
+				# time = 
+			if space == 'region':
+					# Pull data for all sensors
 				print "1"
 				sum = 0
 				count = 0
-		
+			
 				for sensor_id in sensors:
 					print "2"
-					
+						
 					cursor = db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", -1)])
+					# .limit(10).to_list(length=10, callback=rawr)
 					# .limit(1).to_list(length=1, callback=self.bam)
-
+			
 					# .limit(10)
             # .to_list(length=10, self._got_messages))
 
-					# for document in (cursor.to_list(length=1)):
+					for document in (yield cursor.to_list(length=1)):
 						# print "3"
-					# 	# if self.sensors[sensor_id]['latest'] < document['_id'].generation_time:
+						# if self.sensors[sensor_id]['latest'] < document['_id'].generation_time:
 					# 		# self.sensors[sensor_id]['latest'] = document['_id'].generation_time
 					# 	print document
 					# 	print
 						
-					# 	sum += document[channel_id]
+						sum += document[channel_id]
 						# print sum
 				
 				# print
-				# print sum
+				print sum
 				# print
 
 				# print "4"
