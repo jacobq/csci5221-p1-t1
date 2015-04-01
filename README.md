@@ -18,16 +18,12 @@ It should also be available [on the class project website](https://sites.google.
 Here are links to the [design document](docs/design/Design%20Document.pdf)
 and [execution plan](docs/design/Execution%20Plan.pdf).
 
-## Related work
-* [OCTOPUS project][octopus] from researchers at WINLAB, Rutgers, The State University of New Jersey
-* [MATLAB's illustration][matlab-illustration] shows a similar architecture to the one we used for this project
-* [Intelligent Agricultural Solutions][intel-ag] is a company that develops products in this application space
+## Server operations
 
-[octopus]: http://www.winlab.rutgers.edu/docs/focus/Octopus.html
-[matlab-illustration]: http://www.mathworks.com/solutions/internet-of-things/aggregating-and-accessing-your-iot-data.html
-[intel-ag]: http://www.intelligentag.com/
+| HTTP Method | Path       | Description                                                                              |
+|-------------|------------|------------------------------------------------------------------------------------------|
+| `GET`       | `/`        | Simple sanity checks that server is responding                                           |
+| `GET`       | `/version` | Attempts to run `git pull` to update the code from github then shows SHA for HEAD commit |
+| `POST`      | `/collect` | Store the measurement data from the body of the request inthe database                   |
 
-## Further reading
-* [Internet of Things: Converging Technologies for Smart Environments and Integrated Ecosystems][ierc-book-2013]
- 
-[ierc-book-2013]: http://www.internet-of-things-research.eu/pdf/Converging_Technologies_for_Smart_Environments_and_Integrated_Ecosystems_IERC_Book_Open_Access_2013.pdf
+(TODO: Update with WebSocket operations)
