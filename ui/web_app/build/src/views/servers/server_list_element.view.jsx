@@ -39,13 +39,13 @@ module.exports = React.createClass({
         //~ Null Port
         if(this.props.server_data.server_port === null) {
 			var ping = $.ajax({
-				url: "http://" + this.props.server_data.server_url + "/heartbeat",
+				url: "https://" + this.props.server_data.server_url + "/heartbeat",
 			});
 		}
 		
 		else {
 			var ping = $.ajax({
-				url: "http://" + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
+				url: "https://" + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
 			});
 		}
 		

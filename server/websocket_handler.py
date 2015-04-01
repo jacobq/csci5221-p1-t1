@@ -23,6 +23,7 @@ from tornado import gen
 import motor
 
 import pymongo
+import bson
 
 class dataStream(object):
 	# ass self history
@@ -66,7 +67,7 @@ class dataStream(object):
 				# get region sensors by looking up all sensors in region
 				self.sensor_list = []
 
-				cursor = self.db.sensors.find({'region' : self.space_id}).limit(self.space_size)
+				cursor = self.db.sensors.find({'region' : bson.ObjectID(self.space_id)}).limit(self.space_size)
 				print "3"
 				
 
