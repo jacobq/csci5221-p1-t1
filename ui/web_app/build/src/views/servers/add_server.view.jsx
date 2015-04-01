@@ -66,10 +66,35 @@ module.exports = React.createClass({
 
     },
 
+    style_button_save: {
+        'height' : '10%',
+        'width' : '50%',
+        'background' : 'rgba(129,164,60,1.0)',
+        'position':'absolute',
+        'bottom': 0,
+        'left': "50%",
+        'borderTop' : 'solid 2px rgba(33,33,33,1.0)',
+        'cursor':'default',
+
+    },
+
+    style_button_delete: {
+        'height' : '10%',
+        'width' : '50%',
+        'background' : 'rgba(213,86,43,1.0)',
+        'position':'absolute',
+        'bottom': 0,
+        'left': 0,
+        'borderTop' : 'solid 2px rgba(33,33,33,1.0)',
+        'cursor':'default',
+
+    },
+
     style_button_cancel: {
         'height' : '10%',
         'width' : '100%',
-        'background' : 'rgba(213,86,43,1.0)',
+        // 'background' : 'rgba(213,86,43,1.0)',
+        'background' : 'rgba(244,187,58,1.0)',
         'position':'absolute',
         'top': 0,
         'left': 0,
@@ -193,7 +218,7 @@ module.exports = React.createClass({
     render: function() {         
             return (<div style={this.style_base}>
                         <div onClick={this.handle_Cancel_OnTouchEnd} style={this.style_button_cancel}>
-                            <span style={this.style_text}>Cancel<span style={this.style_fa}>&#xf057;</span></span>
+                            <span style={this.style_text}>Cancel</span>
                         </div>
 
                         <div style={this.style_content}>
@@ -202,9 +227,16 @@ module.exports = React.createClass({
                             <input onChange={this.handle_ServerURL_Input} style={this.style_input} placeholder="Server URL/IP Address" value={this.state.server_url}></input>
                             <input onChange={this.handle_ServerPort_Input} style={this.style_input} placeholder="Port (Optional)" value={this.state.server_port}></input>
                         </div>
-                        <div onClick={this.props.page_mode === "create" ? this.handle_Submit_OnTouchEnd : this.handle_Save_OnTouchEnd} style={this.style_button_submit}>
+
+                        {this.props.page_mode === "create" ? null : 
+                        <div onClick={this.handle_Delete_OnTouchEnd} style={this.style_button_delete}>
+                            <span style={this.style_text}>Delete<span style={this.style_fa}>&#xf057;</span></span>
+                        </div> }
+
+                        <div onClick={this.props.page_mode === "create" ? this.handle_Submit_OnTouchEnd : this.handle_Save_OnTouchEnd} style={this.props.page_mode === "create" ? this.style_button_submit : this.style_button_save}>
                             <span style={this.style_text}>{this.props.page_mode === "create" ? "Submit" : "Save"}<span style={this.style_fa}>&#xf058;</span></span>
                         </div>
+
                     </div>);
     }
 });

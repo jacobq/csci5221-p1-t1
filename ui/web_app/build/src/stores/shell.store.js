@@ -35,11 +35,11 @@ module.exports = Reflux.createStore({
             ws.server_port = server_port;
 
 			if(server_port === null) {
-				ws.socket = new WebSocket("wss://" + ws.server_url + "/ws");
+				ws.socket = new WebSocket("ws://" + ws.server_url + "/ws");
 			}
 		
 			else {
-				ws.socket = new WebSocket("wss://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
+				ws.socket = new WebSocket("ws://" + ws.server_url + ":" + ws.server_port.toString() + "/ws");
 			}
 			            
             ws.socket.onopen = function() { WebSocket_Actions.open() };
@@ -122,8 +122,8 @@ module.exports = Reflux.createStore({
         
     },
 
-    loadRegionDashboard: function(region_id, trans) {
-        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans}});
+    loadRegionDashboard: function(region_id, sensor_count, trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans, "page_data": {'region_id' : region_id, 'sensor_count': sensor_count}}});
     },
 
     loadHeatmapQuery: function() {

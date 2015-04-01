@@ -44,7 +44,7 @@ module.exports = React.createClass({
     componentDidMount: function() {
         Debug("componentDidMount");
 
-        ws.socket.send(JSON.stringify({'message_type':'startStreamingData', 'stream_data': 'moisture'}));
+        ws.socket.send(JSON.stringify({'message_type':'startStreamingData', 'stream_channels': ['moisture'], 'space' :'region', 'space_id':this.props.region_id, 'space_size': this.props.sensor_count}));
     },
 
     componentWillUnmount: function() {

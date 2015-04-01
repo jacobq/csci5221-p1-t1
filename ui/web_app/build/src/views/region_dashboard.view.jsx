@@ -50,7 +50,7 @@ module.exports = React.createClass({
         
     render: function() {            
             return (<div style={this.style_base}>
-                    <Live_Data_View />
+                    <Live_Data_View region_id = {this.props.page_data.region_id} sensor_count={this.props.page_data.sensor_count}/>
                     <Tile_View />
                 </div>);
 

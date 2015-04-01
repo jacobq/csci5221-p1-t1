@@ -43,14 +43,24 @@ module.exports = React.createClass({
 
     style_button_submit: {
         'height' : '10%',
-        'width' : '100%',
+        'width' : '50%',
         'background' : 'rgba(129,164,60,1.0)',
         'position':'absolute',
         'bottom': 0,
         'left': 0,
         'borderTop' : 'solid 2px rgba(33,33,33,1.0)',
         'cursor':'default',
+    },
 
+    style_button_delete: {
+        'height' : '10%',
+        'width' : '50%',
+        'background' : 'rgba(213,86,43,1.0)',
+        'position':'absolute',
+        'bottom': 0,
+        'left': 0,
+        'borderTop' : 'solid 2px rgba(33,33,33,1.0)',
+        'cursor':'default',
     },
 
     style_button_cancel: {
@@ -184,6 +194,10 @@ module.exports = React.createClass({
                         </div>
                         <div onClick={this.handle_Submit_OnTouchEnd} style={this.style_button_submit}>
                             <span style={this.style_text}>Save<span style={this.style_fa}>&#xf058;</span></span>
+                        </div>
+
+                        <div onClick={this.handle_Submit_OnTouchEnd} style={this.style_button_delete}>
+                            <span style={this.style_text}>Delete<span style={this.style_fa}>&#xf058;</span></span>
                         </div>
                     </div>);
     }

@@ -47,7 +47,7 @@ var Shell = React.createClass({
             this.setState({
                 slide_dir: data.msg.slide_dir,
                 current_page: data.msg.page,
-                page_data: null
+                page_data: data.msg.page_data
             });
         }
 
@@ -140,7 +140,7 @@ var Shell = React.createClass({
                     </ReactCSSTransitionGroup>  
 
                     <ReactCSSTransitionGroup transitionName={trans}>
-                        { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View /> : null } 
+                        { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View page_data={this.state.page_data} /> : null } 
                     </ReactCSSTransitionGroup>  
 
                     { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View /> : null }
