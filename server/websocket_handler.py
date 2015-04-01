@@ -357,7 +357,7 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			# Remove ObjectID object
 			del document['_id']
 
-			count = yield db.sensors.find({"region" : document['id']}).count()
+			count = yield db.sensors.find({"region" : document['_id']}).count()
 
 			print count
 
