@@ -4,10 +4,12 @@
 # OS-level deps may also be needed:
 # sudo apt-get install libfreetype2-dev libxft-dev
 # sudo apt-get install libpng-dev
+# sudo apt-get install libatlas-base-dev
 # sudo apt-get install libblas-common libopenblas-base libopenblas-dev
 # sudo apt-get install gfortran
 
 sudo easy_install matplotlib
+# NOTE: new versions of numpy drop oldnumeric.*, some of which are needed for scitools
 sudo easy_install numpy
 sudo easy_install scipy
 sudo easy_install scitools
