@@ -105,7 +105,7 @@ def VideoBuilder(Sensors,step):
         f.flush()
         command = [ FFMPEG_BIN,
                 '-i', IMAGE_PATH + 'Image_%04d.png',
-                '-r', '1/5',
+                '-r', '1/2',
                 '-f', 'image2',
                 '-pix_fmt', 'yuv420p',
                 '-an',             # Tells FFMPEG not to expect any audio
