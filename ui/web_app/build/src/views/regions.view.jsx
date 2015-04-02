@@ -14,6 +14,8 @@ var Debug = require('debug')('Regions:View');
 var Regions_Store = require('../stores/regions.store.js');
 var Regions_Actions = require('../actions/regions.actions.js');
 
+var Add_Region_Button_View = require('./regions/add_region_button.view.jsx');
+
 var Region_List_View = require('./regions/region_list.view.jsx');
 
 module.exports = React.createClass({
@@ -54,7 +56,11 @@ module.exports = React.createClass({
     },
         
     render: function() {            
-            return (<div style={this.style_base}><Region_List_View region_list={this.state.region_list} /></div>);
+            return (<div style={this.style_base}>
+                        <Region_List_View region_list={this.state.region_list} />
+
+                        <Add_Region_Button_View />
+                    </div>);
 
     }
 });

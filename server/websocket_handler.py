@@ -129,7 +129,7 @@ class dataStream(object):
     			# print "thread finished...exiting"
 
 
-		# self.scheduler.add_job(self.runStream, 'interval', seconds=2)
+		self.scheduler.add_job(self.runStream, 'interval', seconds=2)
 			# channels=self.channels,
 			# channel_name_map=self.channel_name_map,
 			# sensors=self.sensors,
@@ -151,14 +151,6 @@ class dataStream(object):
 #db, channels, channel_name_map, sensors, space
 	# @gen.coroutine
 	def runStream(self):	
-	
-		print 
-		print 
-		print 
-		print 
-		print 
-
-
 		
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
@@ -172,7 +164,7 @@ class dataStream(object):
 				for sensor_id in self.sensors:
 					
 						
-					cursor = self.db.measurements.find({'deviceId' : str(sensor_id)}).sort([("_id", -1)]).limit(1)
+					cursor = self.db.measurements.find({'sensor_id' :sensor_id}).sort([("_id", -1)]).limit(1)
 
 					# print cursor
 					# .limit(10).to_list(length=10, callback=rawr)
