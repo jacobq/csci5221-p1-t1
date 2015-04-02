@@ -27,6 +27,10 @@ import scipy.ndimage as ndimage
 def VideoBuilder(Sensors,step):
     IMAGE_PATH = "temp/"
     VIDEO_PATH = "../static/video/"
+
+    # Delete previously generated images
+    for f in glob.glob(IMAGE_PATH + '*.png'):
+        os.remove(f)
     
     d = Sensors.shape
     # Break down the input of the user
@@ -98,14 +102,16 @@ def VideoBuilder(Sensors,step):
         timestep += 1
 
     FFMPEG_BIN = "ffmpeg"
-    command = [ FFMPEG_BIN,
-            '-i', 'Image_%04d.png',
-            '-r', '1/5',
-            '-f', 'image2',
-            '-pix_fmt', 'yuv420p',
-            '-an',             # Tells FFMPEG not to expect any audio
-            '-vcodec', 'mpeg4', 
-            '-y',              # Overwrite output
-            '-f', 'rawvideo',
-            VIDEO_PATH + 'movie.mp4']
-    sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE, bufsize=10**8)
+    with open("video-output.log", "a") as f:
+        f.flush()
+        command = [ FFMPEG_BIN,
+                '-i', IMAGE_PATH + 'Image_%04d.png',
+                '-r', '1/5',
+                '-f', 'image2',
+                '-pix_fmt', 'yuv420p',
+                '-an',             # Tells FFMPEG not to expect any audio
+                '-vcodec', 'h264', 
+                '-y',              # Overwrite output
+                '-f', 'rawvideo',
+                VIDEO_PATH + 'movie.mp4']
+        sp.Popen(command, stdout=f, stderr=f, stdin=sp.PIPE, bufsize=10**8)
