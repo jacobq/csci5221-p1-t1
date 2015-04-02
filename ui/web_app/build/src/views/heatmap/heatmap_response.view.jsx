@@ -13,9 +13,9 @@ var moment = require('moment')
 
 var Debug = require('debug')('Regions:View');
 
-var Shell_Actions = require('../../actions/shell.actions.js');
-
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
+
+var Shell_Actions = require('../../actions/shell.actions.js');
 
 var Submit_Heatmap_Button_View = require('./submit_heatmap_button.view.jsx');
 
@@ -109,7 +109,7 @@ module.exports = React.createClass({
     style_base: {
         'height' : '100%',
         'width' : '100%',
-        'background' : 'rgba(221,209,180,1.0)',
+        'background' : 'rgba(255,22,255,1.0)',
         'position':'absolute',
         'top': 0,
         'left': 0,
@@ -117,7 +117,7 @@ module.exports = React.createClass({
 
     style_group: {
         'width' : '96%',
-        // 'background' : 'rgba(255,255,255,1.0)',
+        'background' : 'rgba(255,255,255,1.0)',
         'paddingLeft':'2%',
         'paddingRight':'2%',
 
@@ -232,10 +232,6 @@ module.exports = React.createClass({
             });
     },
 
-    handleOn_Submit_TouchEnd: function(evt){
-        Shell_Actions.loadHeatmapProcessing("test");
-    },
-
 
     render: function() {  
 
@@ -246,7 +242,7 @@ module.exports = React.createClass({
 
 
             return (<div style={this.style_base}>
-                        <div onClick={this.handleOn_Submit_TouchEnd} style={this.button_style_base}>
+                        <div onClick={this.handleOnTouchEnd} style={this.button_style_base}>
                             <span style={this.button_style_text}>Submit Query<span style={this.button_style_fa}>&#xf055;</span></span>
                         </div>
                         <div style={this.style_group}>

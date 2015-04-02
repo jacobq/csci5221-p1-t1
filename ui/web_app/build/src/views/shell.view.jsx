@@ -25,7 +25,7 @@ var Edit_Server_View = require('./servers/edit_server.view.jsx');
 var Region_View = require('./regions.view.jsx');
 var Region_Dashboard_View = require('./region_dashboard.view.jsx');
 
-var Heatmap_Query_View = require('./heatmap/heatmap_query.view.jsx');
+var Heatmap_View = require('./heatmap.view.jsx');
 
 var Server_Actions = require('../actions/server.action.js');
 
@@ -143,7 +143,7 @@ var Shell = React.createClass({
                         { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View page_data={this.state.page_data} /> : null } 
                     </ReactCSSTransitionGroup>  
 
-                    { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View /> : null }
+                    { this.state.current_page == 'heatmap' ? <Heatmap_View page_data={this.state.page_data}/> : null }
                     { this.state.current_page == 'null' ?<Content_View slideUp={this.state.content_slide_up == true ? 88 : null}/> : null }
                 </div>);
     }

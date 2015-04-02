@@ -13,9 +13,9 @@ var moment = require('moment')
 
 var Debug = require('debug')('Regions:View');
 
-var Shell_Actions = require('../../actions/shell.actions.js');
-
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
+
+var Shell_Actions = require('../../actions/shell.actions.js');
 
 var Submit_Heatmap_Button_View = require('./submit_heatmap_button.view.jsx');
 
@@ -109,7 +109,7 @@ module.exports = React.createClass({
     style_base: {
         'height' : '100%',
         'width' : '100%',
-        'background' : 'rgba(221,209,180,1.0)',
+        'background' : 'rgba(25,225,255,1.0)',
         'position':'absolute',
         'top': 0,
         'left': 0,
@@ -117,7 +117,7 @@ module.exports = React.createClass({
 
     style_group: {
         'width' : '96%',
-        // 'background' : 'rgba(255,255,255,1.0)',
+        'background' : 'rgba(255,255,255,1.0)',
         'paddingLeft':'2%',
         'paddingRight':'2%',
 
@@ -232,8 +232,8 @@ module.exports = React.createClass({
             });
     },
 
-    handleOn_Submit_TouchEnd: function(evt){
-        Shell_Actions.loadHeatmapProcessing("test");
+    handleOn_Cancel_TouchEnd: function(evt){
+        Shell_Actions.loadRegionDashboard_View('right');
     },
 
 
@@ -246,73 +246,10 @@ module.exports = React.createClass({
 
 
             return (<div style={this.style_base}>
-                        <div onClick={this.handleOn_Submit_TouchEnd} style={this.button_style_base}>
+                        <div onClick={this.handleOn_Cancel_TouchEnd} style={this.button_style_base}>
                             <span style={this.button_style_text}>Submit Query<span style={this.button_style_fa}>&#xf055;</span></span>
                         </div>
-                        <div style={this.style_group}>
-                            <select onChange={this.selectedStartDate} style={this.style_select_left} className="styled-select slate">
-                                {this.state.startDate != null ? <option style={this.style_select_null} selected="selected">{this.state.startDate}</option> : <option selected="selected">Start Date</option>}
-                                {this.state.heatmap_bounds.date.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-
-                            <select onChange={this.selectedStartTime} style={this.style_select_right} className="styled-select slate">
-                                {this.state.startTime != null ? <option style={this.style_select_null} selected="selected">{this.state.startTime}</option> : <option selected="selected">Start Time</option>}
-                                {this.state.startTimes.map(function(data)  {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-                        </div>
-
-
-                        <div style={this.style_group}>
-                            <select onChange={this.selectedEndDate} style={this.style_select_left} className="styled-select slate">
-                                {this.state.endDate != null ? <option style={this.style_select_null} selected="selected">{this.state.endDate}</option> : <option selected="selected">End Date</option>}
-                                {this.state.heatmap_bounds.date.map(function(data) {
-                                    return <option>{data}</option>;
-                                })}
-                            </select>
-
-                            <select style={this.style_select_right} className="styled-select slate">
-                                {this.state.endTime != null ? <option style={this.style_select_null} selected="selected">{this.state.endTime}</option> : <option selected="selected">End Time</option>}
-                                {this.state.endTimes.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-                        </div>
-
-                        <div style={this.style_group}>
-                            <select onChange={this.selected_xMin} style={this.style_select_left} className="styled-select slate">
-                                {this.state.xMin != null ? <option style={this.style_select_null} selected="selected">{this.state.xMin}</option> : <option selected="selected">Min X</option>}
-                                {this.state.heatmap_bounds.x.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-
-                            <select onChange={this.selected_xMax} style={this.style_select_right} className="styled-select slate">
-                                {this.state.xMax != null ? <option style={this.style_select_null} selected="selected">{this.state.xMax}</option> : <option selected="selected">Max X</option>}
-                                {this.state.heatmap_bounds.x.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-                        </div>
-
-                        <div style={this.style_group}>
-                            <select onChange={this.selected_yMin} style={this.style_select_left} className="styled-select slate">
-                                {this.state.yMin != null ? <option style={this.style_select_null} selected="selected">{this.state.yMax}</option> : <option selected="selected">Min Y</option>}
-                                {this.state.heatmap_bounds.y.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-
-                            <select onChange={this.selected_yMax} style={this.style_select_right} className="styled-select slate">
-                                {this.state.yMax != null ? <option style={this.style_select_null} selected="selected">{this.state.yMax}</option> : <option selected="selected">Max Y</option>}
-                                {this.state.heatmap_bounds.y.map(function(data) {
-                                    return <option value={data} >{data}</option>
-                                })}
-                            </select>
-                        </div>
+                
                 </div>);
     }
 });

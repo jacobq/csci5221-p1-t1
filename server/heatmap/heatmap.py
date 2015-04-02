@@ -23,7 +23,6 @@ import os as os
 import glob as glob
 import scitools.easyviz.movie as movie
 
-
 def VideoBuilder(Sensors,step):
     
     # Garbage collection/ Erase existing files

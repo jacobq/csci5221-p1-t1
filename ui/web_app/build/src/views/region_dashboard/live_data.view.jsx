@@ -52,9 +52,9 @@ module.exports = React.createClass({
     },
 
     style_base: {
-        'height' : 260,
+        'height' : 200,
         'width' : '100%',
-        'background' : 'rgba(255,255,255,1.0)',       
+        'background' : 'rgba(87,116,131,1.0)',    
         'padding': 0,
         'margin': 0,
         'textAlign' : 'center',
@@ -62,6 +62,7 @@ module.exports = React.createClass({
         'borderTop': 'solid 1px rgba(33,33,33,1.0)',
         'borderBottom': 'solid 1px rgba(33,33,33,1.0)',
         'listStyle' : 'none',
+        'color':'rgba(255,255,255,1.0)',
     },
         
     render: function() {   
@@ -71,10 +72,10 @@ module.exports = React.createClass({
             labels: this.state.labels,
             datasets: [
                 {
-                    label: "My First dataset",
-                    fillColor: "rgba(0,0,220,0.2)",
-                    strokeColor: "rgba(0,0,220,1)",
-                    pointColor: "rgba(0,0,220,1)",
+                    label: "Moisture",
+                    fillColor: "rgba(255,255,255,0.2)",
+                    strokeColor: "rgba(255,255,255,1)",
+                    pointColor: "rgba(255,255,255,1)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
@@ -82,8 +83,6 @@ module.exports = React.createClass({
                 },
             ]
         };
-
-
 
         // chartData.labels = self.state.labels;
 
@@ -93,7 +92,7 @@ module.exports = React.createClass({
             scaleShowGridLines : true,
 
             //String - Colour of the grid lines
-            scaleGridLineColor : "rgba(0,0,0,0.05)",
+            scaleGridLineColor : "rgba(255,255,255,0.05)",
 
             //Number - Width of the grid lines
             scaleGridLineWidth : 1,
@@ -131,11 +130,13 @@ module.exports = React.createClass({
             //Boolean - Whether to fill the dataset with a colour
             datasetFill : true,
 
+            scaleFontColor: "rgba(255,255,255,1.0)",
+
             //String - A legend template
             legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
 
         };
 
-        return (<div style={this.style_base}><LineChart data={chartData} options={chartOptions} width="400px" height="250"/></div>);
+        return (<div style={this.style_base}><LineChart data={chartData} options={chartOptions} width="380px" height="210"/></div>);
     }
 });

@@ -37,7 +37,7 @@ module.exports = React.createClass({
     style_base: {
         'height' : '88%',
         'width' : '100%',
-        'background' : 'rgba(255,25,255,1.0)',
+        'background' : 'rgba(221,209,180,1.0)',
         'position':'absolute',
         'top': '12%',
         'left': 0,
@@ -48,10 +48,10 @@ module.exports = React.createClass({
         'animationFillMode': 'both',
     },
         
-    render: function() {            
+    render: function() {
             return (<div style={this.style_base}>
                     <Live_Data_View region_id = {this.props.page_data.region_id} sensor_count={this.props.page_data.sensor_count}/>
-                    <Tile_View />
+                    <Tile_View spatial_data={this.props.page_data.spatial_data}/>
                 </div>);
 
     }

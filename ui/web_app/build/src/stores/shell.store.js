@@ -19,6 +19,8 @@ module.exports = Reflux.createStore({
         this.listenTo(Shell_Actions.loadRegions, this.loadRegions);
         this.listenTo(Shell_Actions.loadRegionDashboard, this.loadRegionDashboard);
         this.listenTo(Shell_Actions.loadHeatmapQuery, this.loadHeatmapQuery);
+        this.listenTo(Shell_Actions.loadHeatmapResponse, this.loadHeatmapResponse);
+        this.listenTo(Shell_Actions.loadHeatmapProcessing, this.loadHeatmapProcessing);
 
         this.listenTo(WebSocket_Actions.open, this.wsOnOpen);
         this.listenTo(WebSocket_Actions.error, this.wsOnError);
@@ -26,6 +28,7 @@ module.exports = Reflux.createStore({
         this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
 
         this.listenTo(Shell_Actions.loadRegions_View, this.loadRegions_View);
+        this.listenTo(Shell_Actions.loadRegionDashboard_View, this.loadRegionDashboard_View);
     },
 
     connectWs: function(server_url, server_port) {
@@ -122,16 +125,32 @@ module.exports = Reflux.createStore({
         
     },
 
-    loadRegionDashboard: function(region_id, sensor_count, trans) {
-        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans, "page_data": {'region_id' : region_id, 'sensor_count': sensor_count}}});
+    loadRegionDashboard: function(region_id, sensor_count, shape, trans) {
+        this.region_id = region_id;
+        this.sensor_count = sensor_count;
+        this.shape = shape;
+
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans, "page_data": {'region_id' : region_id, 'sensor_count': sensor_count, 'spatial_data': shape}}});
     },
 
-    loadHeatmapQuery: function() {
-        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "heatmap_query", "slide_dir" : "left"}});
+    loadHeatmapQuery: function(spatial_data) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "heatmap", "slide_dir" : "left", "page_data": {'spatial_data': spatial_data}}});
+    },
+
+    loadHeatmapResponse: function(url) {
+        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_response", "slide_dir" : "left", "page_data": {'heatmap_url':url}}});
+    },
+
+    loadHeatmapProcessing: function(status) {
+        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_processing", "slide_dir" : "left", "page_data": {'stauts': status}}});
     },
 
     loadRegions_View: function(trans) {
         this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_list", "slide_dir" : trans}});
+    },
+
+    loadRegionDashboard_View: function(trans) {
+        this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans, "page_data": {'region_id' : this.region_id, 'sensor_count': this.sensor_count, 'spatial_data': this.shape}}});
     },
 
     

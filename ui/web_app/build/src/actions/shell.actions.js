@@ -7,5 +7,8 @@ module.exports = Reflux.createActions([
     "loadRegions",
     "loadRegionDashboard",
     "loadHeatmapQuery",
+    "loadHeatmapProcessing",
+    "loadHeatmapResponse",
     "loadRegions_View",
+    "loadRegionDashboard_View",
   ]);

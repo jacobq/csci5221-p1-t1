@@ -253,7 +253,7 @@ module.exports = React.createClass({
     },
 
     handle_Connect_TouchEnd: function(evt) {
-        Shell_Actions.loadRegionDashboard(this.props.region_data.id, this.props.region_data.sensor_count);
+        Shell_Actions.loadRegionDashboard(this.props.region_data.id, this.props.region_data.sensor_count, this.props.region_data.shape);
     },
 
     handle_Edit_TouchEnd: function(evt) {
