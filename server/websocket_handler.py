@@ -27,7 +27,7 @@ import bson
 
 class dataStream(object):
 	# ass self history
-	def __init__(self,channels, space, space_id, space_size, db, ws):
+	def __init__(self,scheduler, channels, space, space_id, space_size, db, ws):
 		self.channels = channels
 		self.space = space
 		self.space_id = space_id
@@ -36,9 +36,8 @@ class dataStream(object):
 		# self.db = db
 		self.ws = ws
 
-		self.scheduler = TornadoScheduler()
-		self.scheduler.start()
-		self.stream_job = None
+		self.scheduler = scheduler
+		self.stream_jobs = None
 
 		self.current = {}
 		self.sensors = {}
@@ -53,9 +52,6 @@ class dataStream(object):
 			"temperature": "t",
 		}
 
-			
-			# self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
-	# @gen.coroutine
 	def startStream(self):
 		print "ss 1"
 		for channel in self.channels:
@@ -64,13 +60,13 @@ class dataStream(object):
 			print "ss 2"
 			if self.space == 'region':
 				self.sensors[channel_id] = []
+
 				# get region sensors by looking up all sensors in region
 				self.sensor_list = []
 
 				cursor = self.db.sensors.find({'region' : bson.ObjectId(self.space_id)}).limit(self.space_size)
 				print "3"
 				
-
 				# Lookup and store all sensor id's
 				for document in cursor:
 					
@@ -85,8 +81,6 @@ class dataStream(object):
 					
 					cursor = self.db.measurements.find({'sensor_id' : sensor_id}).sort([("_id", 1)]).limit(10)
 
-					# db.test.find({"number": {"$gt": 1}}).sort([("number", 1), ("date", -1)])
-
 					for document in cursor:
 						print document['_id'].generation_time
 
@@ -97,9 +91,7 @@ class dataStream(object):
 
 						elif self.sensors[sensor_id]['latest'] < document['_id'].generation_time:
 							self.sensors[sensor_id]['latest'] = document['_id'].generation_time							
-
-					#db.collection.find( { field: { $gt: value1, $lt: value2 } } );
-				
+	
 				# we now have lists for the last 10 values of each sensor
 				for x in range(0,10):
 					sum = 0;
@@ -110,128 +102,47 @@ class dataStream(object):
 					if(sum > 0):
 						avg = sum/self.space_size
 
-						print avg
-
-						# str(document['_id'].generation_time.strftime("%H:%M:%S"))
 						data = {'time' : "", 'data' : avg}
 						msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
 						self.ws.write_message(json.dumps(msg))
 
-				# Bootstrapping done, schedule and run job
+		self.stream_job = self.scheduler.add_job(self.runStream, 'interval', seconds=5)
 
-				# print self.averages
-				# print self.sensors
-
-				# self.stream_job = threading.Thread(target = self.runStream, args = (self.channels, self.space, self.sensors, self.db, self.ws))
-				# self.stream_job.daemon = True
-				# self.stream_job.start()
-    # 			self.stream_job.join()
-    			# print "thread finished...exiting"
-
-
-		self.scheduler.add_job(self.runStream, 'interval', seconds=2)
-			# channels=self.channels,
-			# channel_name_map=self.channel_name_map,
-			# sensors=self.sensors,
-			# space=self.space)), 'interval', seconds=2)
-
-
-		# self.scheduler.add_job((lambda: self.runStream(db=self.db,
-			# channels=self.channels,
-			# channel_name_map=self.channel_name_map,
-			# sensors=self.sensors,
-			# space=self.space)), 'interval', seconds=2)
-
-		# schedule.every(0.5).minutes.do(self.runStream)
-		# schedule.run_pending()
-
-	def bam(self,b,e):
-		print 'rawer'
-
-#db, channels, channel_name_map, sensors, space
-	# @gen.coroutine
 	def runStream(self):	
 		
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
-				# time = 
+
+
 			if self.space == 'region':
-					# Pull data for all sensors
 				
 				sum = 0
-				count = 0
 			
 				for sensor_id in self.sensors:
-					
-						
 					cursor = self.db.measurements.find({'sensor_id' :sensor_id}).sort([("_id", -1)]).limit(1)
 
-					# print cursor
-					# .limit(10).to_list(length=10, callback=rawr)
-					# .limit(1).to_list(length=1, callback=self.bam)
-			
-					# .limit(10)
-            # .to_list(length=10, self._got_messages))
-
 					for document in cursor:
-
-						# print "3"
-						# if self.sensors[sensor_id]['latest'] < document['_id'].generation_time:
-					# 		# self.sensors[sensor_id]['latest'] = document['_id'].generation_time
-					# 	print document
-					# 	print
 						
 						sum += document[channel_id]
-						# print sum
-				
-				# print
+
 				avg = sum/self.space_size
 
 				data = {'time' : "", 'data' : avg}
 				msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
 				self.ws.write_message(json.dumps(msg))
-				# print
 
-				# print "4"
-				# if(sum > 0):
-				# 	avg = sum/self.space_size
-
-				# 	print
-				# 	print avg
-				# 	print 
-				# 		# str(document['_id'].generation_time.strftime("%H:%M:%S"))
-				# 	data = {'time' : "", 'data' : avg}
-				# 	msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
-				# 	self.ws.write_message(json.dumps(msg))
-
-
-
-					
-
-
-		
-
-
+	def stopStream(self):
+		self.stream_job.remove()
 
 class WebsocketHandler(websocket.WebSocketHandler):
-
-	# @gen.coroutine
-	def some_job(self):
-		db = self.settings['db']
-
-		# n = db.measurements.find().sort({'$natural': -1})
-
-		# print n
-
-		print time.strftime("%H:%M:%S")
-		data = {'time' : str(time.strftime("%H:%M:%S")), 'data' : random.randint(100,200)}
-		msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
-		self.write_message(json.dumps(msg))
 
 	def check_origin(self, origin):
 		return True
     
 	def open(self):
+		self.scheduler = TornadoScheduler()
+		self.scheduler.start()
+
 		print "WebSocket opened"
 
 	@gen.coroutine
@@ -243,95 +154,23 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			self.getRegionList()
 
 		elif(data['message_type'] == 'startStreamingData'):
-			stream = dataStream(data['stream_channels'], data['space'], data['space_id'],data['space_size'], self.settings['db'], self)
-			stream.startStream()
+			self.stream = dataStream(self.scheduler, data['stream_channels'], data['space'], data['space_id'],data['space_size'], self.settings['db'], self)
+			self.stream.startStream()
 			
-
-
-
-			# for document in (yield cursor.to_list(length=100)):
-			# .sort({'$natural': -1})
-
-			# db.test.find({"number": {"$gt": 1}}).sort([("number", 1), ("date", -1)])
-
-			
-			# Determine stream type
-			# Need region
-			# space = data['space']
-			# space_id = data['space_id']
-# 
-			# # if(data['stream_data'] == 'moisture'):
-			# 	# if space == 'region':
-			# 		# do region stream
-					
-
-
-
-			# 	db = self.settings['db']
-			# 	print "2"
-
-				
-
-			# 	cursor = db.measurements.find({'region' : space_id}).sort([("number", 1), ("date", -1)])
-
-			# 	print "3"
-			# 	for document in (yield cursor.to_list(length=2)):
-
-			# 		data = {'time' : str(document['_id'].generation_time.strftime("%H:%M:%S")), 'data' : document['m']}
-			# 		msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
-			# 		self.write_message(json.dumps(msg))
-
-			# 		print document
-
-				# Initital
-				# data = {'time' : str(time.strftime("%H:%M:%S")), 'data' : random.randint(100,200)}
-				# msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
-				# self.write_message(json.dumps(msg))
-				
-				# sched = BackgroundScheduler()
-				# sched.start()
-
-				# self.stream_job = sched.add_job(self.some_job, 'interval', seconds=2)
-				# job.remove()
-				# sched.add_interval_job(some_job, seconds = 10)
-
-
-				# sched.shutdown()
-
 		elif(data['message_type'] == 'stopStreamingData'):
 			print "stream stop"
-			self.stream_job.remove()
+			self.streamStream.remove()
 
 		elif(data['message_type'] == 'heatmap_bounds'):
 			print "getHeatmapBounds"
 			# Extract region id
-		
-			
+
 			self.write_message(json.dumps(self.getHeatmapBounds(data['region_id'])))
-
-		# print message
-
-		# print json.loads(message)['test']
-
-
-
-		# data = json.loads(message)
-
-		# print data
-
-		# if(data.request_type == 'regions'):
-			# if(data.request == 'list'):
-				# self.write_message([{'region_id' : 'region_1', 'region_name' : 'Region 1', 'status' : 'Good', 'sensor_count' : 24, 'location' : 'Lino Lakes'}])
-		
-
-		# else:
-		# self.write_message(u"You said: " + message)
 
 	def on_close(self):
 		print "WebSocket closed"
-		self.stream_job.remove()
+		self.stream.remove()
 	
-	# @asynchronous
 	@gen.coroutine
 	def getRegionList(self): 
 		# print "getRegionList"
