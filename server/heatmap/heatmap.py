@@ -13,23 +13,21 @@ Input:
     - Delta is the refinement of the grid that we use
 
 """
+import os
+import glob
+import subprocess as sp
 import math as mth
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import scipy.ndimage as ndimage
-import os as os
-import glob as glob
-import scitools.easyviz.movie as movie
 
 
 def VideoBuilder(Sensors,step):
+    IMAGE_PATH = "temp/"
+    VIDEO_PATH = "../static/video/"
     
-    # Garbage collection/ Erase existing files
-    for f in glob.glob('Image_*.eps'):
-        os.remove(f)
-
     d = Sensors.shape
     # Break down the input of the user
     Xcoord = Sensors[:,0]
@@ -96,11 +94,18 @@ def VideoBuilder(Sensors,step):
         # We can still add a colorbar for the image, too.
         CBI = plt.colorbar(im, ticks=[np.amin(Z),np.mean(Z), np.amax(Z)], orientation='horizontal', shrink=0.7)
         CBI.ax.set_xticklabels(['Min: '+str(mth.ceil(np.amin(Z))),'Mean: '+str(mth.ceil(np.mean(Z))),'Max: '+str(mth.ceil(np.amax(Z)))])
-        plt.savefig('Image_' + str(timestep).zfill(4) + '.eps')
+        plt.savefig(IMAGE_PATH + 'Image_' + str(timestep).zfill(4) + '.png')
         timestep += 1
 
-    # Video creation step
-    movie('Image_*.eps', encoder = 'mencoder', output_file = '../static/video/movie.mp4', vcodec='x264', vbitrate=2400, qscale=4, fps=0.2)
-    # Garbage collection/ Erase existing files
-    for f in glob.glob('Image_*.eps'):
-        os.remove(f)
+    FFMPEG_BIN = "ffmpeg"
+    command = [ FFMPEG_BIN,
+            '-i', 'Image_%04d.png',
+            '-r', '1/5',
+            '-f', 'image2',
+            '-pix_fmt', 'yuv420p',
+            '-an',             # Tells FFMPEG not to expect any audio
+            '-vcodec', 'mpeg4', 
+            '-y',              # Overwrite output
+            '-f', 'rawvideo',
+            VIDEO_PATH + 'movie.mp4']
+    sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE, bufsize=10**8)
