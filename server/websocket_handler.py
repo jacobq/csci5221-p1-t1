@@ -53,11 +53,9 @@ class dataStream(object):
 		}
 
 	def startStream(self):
-		print "ss 1"
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
 			# time = 
-			print "ss 2"
 			if self.space == 'region':
 				self.sensors[channel_id] = []
 
@@ -65,8 +63,7 @@ class dataStream(object):
 				self.sensor_list = []
 
 				cursor = self.db.sensors.find({'region' : bson.ObjectId(self.space_id)}).limit(self.space_size)
-				print "3"
-				
+	
 				# Lookup and store all sensor id's
 				for document in cursor:
 					
@@ -74,7 +71,6 @@ class dataStream(object):
 					self.sensors[channel_id].append(document['_id'])
 					self.sensors[document['_id']] = {'latest': None}
 					self.averages[document['_id']] = []
-
 
 				# Pull data for all sensors
 				for sensor_id in self.sensors[channel_id]:
@@ -113,7 +109,6 @@ class dataStream(object):
 		for channel in self.channels:
 			channel_id = self.channel_name_map[channel]
 
-
 			if self.space == 'region':
 				
 				sum = 0
@@ -142,8 +137,7 @@ class WebsocketHandler(websocket.WebSocketHandler):
 	def open(self):
 		self.scheduler = TornadoScheduler()
 		self.scheduler.start()
-
-		print "WebSocket opened"
+		self.streams = []
 
 	@gen.coroutine
 	def on_message(self, message):
@@ -154,27 +148,24 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			self.getRegionList()
 
 		elif(data['message_type'] == 'startStreamingData'):
-			self.stream = dataStream(self.scheduler, data['stream_channels'], data['space'], data['space_id'],data['space_size'], self.settings['db'], self)
-			self.stream.startStream()
+			stream = dataStream(self.scheduler, data['stream_channels'], data['space'], data['space_id'],data['space_size'], self.settings['db'], self)
+			stream.startStream()
+
+			self.streams.append(stream)
 			
 		elif(data['message_type'] == 'stopStreamingData'):
-			print "stream stop"
-			self.streamStream.remove()
+			for stream in self.streams:
+				stream.stopStream()
 
 		elif(data['message_type'] == 'heatmap_bounds'):
-			print "getHeatmapBounds"
-			# Extract region id
-
 			self.write_message(json.dumps(self.getHeatmapBounds(data['region_id'])))
 
 	def on_close(self):
-		print "WebSocket closed"
-		self.stream.stopStream()
-	
+		for stream in self.streams:
+			stream.stopStream()
+		
 	@gen.coroutine
 	def getRegionList(self): 
-		# print "getRegionList"
-
 		# Get reigons from database
 		region_list = []
 		
@@ -186,41 +177,16 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			# Change ObjectID to string
 			document['id'] = str(document['_id'])
 
+			# Get region count
 			count = yield db.sensors.find({"region" : document['_id']}).count()
+
+			document['sensor_count'] = count
 
 			# Remove ObjectID object
 			del document['_id']
 
-			
-
-			print count
-
-			document['sensor_count'] = count
-
-			# print document
-
 			# Append region to region list
 			region_list.append(document)
-			
-
-		# region_1 = {}
-
-		# region_1['id'] = 1
-		# region_1['type'] = 'rectangle'
-		# region_1['channels'] = ['moisture']
-		# region_1['name'] = ['Region 1']
-		# region_1['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
-
-		# region_2 = {}
-
-		# region_2['id'] = 2
-		# region_2['type'] = 'rectangle'
-		# region_2['channels'] = ['moisture']
-		# region_2['name'] = ['Region 2']
-		# region_2['parameters'] = { 'nw' : {'x' : 0, 'y' : 0}, 'se' : {'x' : 10, 'y' : 10} }
-
-		# region_list.append(region_1)
-		# region_list.append(region_2)
 
 		self.write_message(json.dumps({'message_type': 'getRegionList_Response', 'region_list' : region_list}))
 
