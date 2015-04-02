@@ -169,7 +169,7 @@ class WebsocketHandler(websocket.WebSocketHandler):
 
 	def on_close(self):
 		print "WebSocket closed"
-		self.stream.remove()
+		self.stream.stopStream()
 	
 	@gen.coroutine
 	def getRegionList(self): 
