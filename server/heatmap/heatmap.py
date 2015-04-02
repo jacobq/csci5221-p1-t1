@@ -112,6 +112,6 @@ def VideoBuilder(Sensors,step):
                 '-an',             # Tells FFMPEG not to expect any audio
                 '-vcodec', 'h264', 
                 '-y',              # Overwrite output
-                '-f', 'rawvideo',
+                '-f', 'mp4',
                 VIDEO_PATH + 'movie.mp4']
         sp.Popen(command, stdout=f, stderr=f, stdin=sp.PIPE, bufsize=10**8)
