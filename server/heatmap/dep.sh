@@ -7,6 +7,10 @@
 # sudo apt-get install libatlas-base-dev
 # sudo apt-get install libblas-common libopenblas-base libopenblas-dev
 # sudo apt-get install gfortran
+# Note: A/V packages are often patent-encumbered, so they may require licensing
+# sudo apt-get install ffmpeg mencoder w64codecs libavcodec-extra-54
+
+
 
 sudo easy_install matplotlib
 # NOTE: new versions of numpy drop oldnumeric.*, some of which are needed for scitools

@@ -100,7 +100,7 @@ def VideoBuilder(Sensors,step):
         timestep += 1
 
     # Video creation step
-    movie('Image_*.eps', encoder = 'mencoder', output_file = 'C:\Users\nikos\Desktop\movie.mpeg', vcodec='mpeg2video', vbitrate=2400, qscale=4, fps=0.2)
+    movie('Image_*.eps', encoder = 'mencoder', output_file = '../static/video/movie.mp4', vcodec='mpeg2video', vbitrate=2400, qscale=4, fps=0.2)
     # Garbage collection/ Erase existing files
     for f in glob.glob('Image_*.eps'):
         os.remove(f)
