@@ -102,7 +102,7 @@ class dataStream(object):
 						msg = {'message_type': 'stream_data', 'stream' : 'moisture', 'stream_data' : data}
 						self.ws.write_message(json.dumps(msg))
 
-		self.stream_job = self.scheduler.add_job(self.runStream, 'interval', seconds=5)
+		self.stream_job = self.scheduler.add_job(self.runStream, 'interval', seconds=150)
 
 	def runStream(self):	
 		
