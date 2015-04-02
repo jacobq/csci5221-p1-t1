@@ -114,7 +114,7 @@ class dataStream(object):
 				sum = 0
 			
 				for sensor_id in self.sensors:
-					cursor = self.db.measurements.find({'sensor_id' :sensor_id}).sort([("_id", -1)]).limit(1)
+					cursor = self.db.measurements.find({'sensor_id' :sensor_id}).sort([("$natural", -1)]).limit(1)
 
 					for document in cursor:
 						
