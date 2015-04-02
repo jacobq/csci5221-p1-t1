@@ -60,7 +60,6 @@ module.exports = Reflux.createStore({
     wsOnOpen: function() {
         // Replace with client ident/mac and other bootstraping
         // authent
-        
         ws.state = 'open';
     
         ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));

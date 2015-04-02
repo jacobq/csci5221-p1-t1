@@ -157,6 +157,18 @@ class WebsocketHandler(websocket.WebSocketHandler):
 			for stream in self.streams:
 				stream.stopStream()
 
+		elif(data['message_type'] == 'heatmap_query'):
+			print
+			print
+			print "asdfasfd"
+			# Extract bounds
+
+			time.sleep(5)
+			print "asdfasdfsadfasfasdfasfdasdf"
+			self.write_message(json.dumps({'message_type': 'heatmap_response', 'url' : "https://github.com/jacobq/csci5221-p1-t1/blob/master/server/heatmap/demo.py"}))
+
+
+
 		elif(data['message_type'] == 'heatmap_bounds'):
 			self.write_message(json.dumps(self.getHeatmapBounds(data['region_id'])))
 

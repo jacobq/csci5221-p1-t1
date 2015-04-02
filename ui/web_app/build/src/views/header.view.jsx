@@ -76,6 +76,10 @@ module.exports = React.createClass({
     handle_Regions_TouchEnd: function(evt){
         Shell_Actions.loadRegions_View("right");
     },
+
+    handle_Region_TouchEnd: function(evt){
+        Shell_Actions.loadRegionDashboard_View("right");
+    },
         
     render: function() {   
             // Determine which to show

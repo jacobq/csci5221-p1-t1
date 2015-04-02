@@ -143,7 +143,10 @@ var Shell = React.createClass({
                         { this.state.current_page == 'region_dashboard' ? <Region_Dashboard_View page_data={this.state.page_data} /> : null } 
                     </ReactCSSTransitionGroup>  
 
-                    { this.state.current_page == 'heatmap' ? <Heatmap_View page_data={this.state.page_data}/> : null }
+                    <ReactCSSTransitionGroup transitionName={trans}>
+                        { this.state.current_page == 'heatmap' ? <Heatmap_View page_data={this.state.page_data}/> : null }
+                    </ReactCSSTransitionGroup>  
+                    
                     { this.state.current_page == 'null' ?<Content_View slideUp={this.state.content_slide_up == true ? 88 : null}/> : null }
                 </div>);
     }

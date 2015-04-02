@@ -25,70 +25,25 @@ module.exports = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
-
-        // Build Time Selection
-        var time_select = []
-
-        var d = new Date();
-        var current_hour = d.getHours();
-        var x = 1;
-
-        for(x = 1; x < 11; x++) {
-            time_select.push(current_hour-x + ":30");
-            time_select.push(current_hour-x + ":00");
-        }
-
-        var x_min = this.props.page_data.spatial_data.vertices[0].x;
-        var y_min = this.props.page_data.spatial_data.vertices[0].y;
-
-        var x_max = this.props.page_data.spatial_data.vertices[1].x;
-        var y_max = this.props.page_data.spatial_data.vertices[1].y;
-
-        var delta = 10;
-        var x_delta = (x_max - x_min)/delta;
-        var y_delta = (y_max - y_min)/delta;
-
-        var x_array = []
-        var y_array = []
-        var i = 0;
-
-        for(i = x_min; i <= x_max; i+=x_delta){
-            x_array.push(i);
-        }
-
-        for(i = y_min; i <= y_max; i+=y_delta){
-            y_array.push(i);
-        }
-        
-        // alert(x_array);
-        // alert(y_array);
-
-        return { startDate: null,
-                    startTime: null,
-                    startTimes: time_select,
-                    endDate: null,
-                    endTime: null,
-                    endTimes: time_select,
-                    xMin: null,
-                    xMax: null,
-                    yMin: null,
-                    yMax: null,
-                    heatmap_bounds: {'date' : [], 'time': [], 'x': x_array, 'y': y_array}, 'start_date_entered' : false, 'end_date_entered' : false};
+        return ({ status: "Processing..."});
     },
 
     wsOnMessage: function(evt) {
         msg = JSON.parse(evt.data);
+
+        if(msg.message_type == "heatmap_response") {
+            Shell_Actions.loadHeatmapResponse(msg.url);
+        }
         
-        if(msg.message_type == "heatmap_bounds_Response") {
+        if(msg.message_type == "heatmap_status") {
             this.setState({
-                heatmap_bounds: msg.heatmap_bounds
+                status: msg.status
             });
         }
     },
 
     componentWillMount: function() {
-
-        // this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
+        this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
         
         // Need to get start/end dates and time lists
     },
@@ -109,22 +64,40 @@ module.exports = React.createClass({
     style_base: {
         'height' : '100%',
         'width' : '100%',
-        'background' : 'rgba(25,225,255,1.0)',
+        'background' : 'rgba(221,209,180,1.0)',
         'position':'absolute',
         'top': 0,
         'left': 0,
     },
 
     style_group: {
+        'height':200,
         'width' : '96%',
-        'background' : 'rgba(255,255,255,1.0)',
+        // 'background' : 'rgba(255,255,255,1.0)',
         'paddingLeft':'2%',
         'paddingRight':'2%',
 
         'margin':0,
 
-        'marginTop':30,
-        'float':'left',
+        'marginTop':100,
+        'textAlign':'center',
+        'fontSize':48,
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
+    },
+
+    style_group_2: {
+        'height':200,
+        'width' : '96%',
+        // 'background' : 'rgba(255,255,255,1.0)',
+        'paddingLeft':'2%',
+        'paddingRight':'2%',
+
+        'margin':0,
+
+        'marginTop':100,
+        'textAlign':'center',
+        'fontSize':24,
+        'fontFamily': '"Arial Black", Gadget, sans-serif',
     },
 
     style_select_left: {
@@ -144,7 +117,8 @@ module.exports = React.createClass({
         'height' : '10%',
         'width' : '100%',
         // 'background' : 'rgba(204,203,49,1.0)',
-        'background' : 'rgba(129,164,60,1.0)',
+        // 'background' : 'rgba(129,164,60,1.0)',
+        'background' : 'rgba(213,86,43,1.0)',
         // 'background' : 'rgba(100,100,100,1.0)',
         'position':'absolute',
         'bottom': 0,
@@ -176,60 +150,9 @@ module.exports = React.createClass({
         'fontFamily':'FontAwesome',
         'margin': 0,
         'padding': 0,
-        
-
+    
         'marginLeft': 5,
         'marginRight': 5,
-
-    },
-
-   
-
-    selectedStartDate: function(evt){
-        this.setState({
-                startDate: evt.target.value,
-                startTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
-    },
-
-    selectedStartTime: function(evt){
-        this.setState({
-                startTime: evt.target.value,
-            });
-    },
-
-    selectedEndDate: function(evt){
-        this.setState({
-                endDate: evt.target.value,
-                endTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
-    },
-
-    selectedEndTime: function(evt){
-        this.setState({
-                endTime: evt.target.value,
-            });
-    },
-
-    selected_xMin: function(evt){
-        this.setState({
-                xMin: evt.target.value,
-            });
-    },
-    selected_xMax: function(evt){
-        this.setState({
-                xMax: evt.target.value,
-            });
-    },
-    selected_yMin: function(evt){
-        this.setState({
-                yMin: evt.target.value,
-            });
-    },
-    selected_yMax: function(evt){
-        this.setState({
-                yMax: evt.target.value,
-            });
     },
 
     handleOn_Cancel_TouchEnd: function(evt){
@@ -238,17 +161,14 @@ module.exports = React.createClass({
 
 
     render: function() {  
-
-            // alert(this.props.page_data.spatial_data);
-
-            // Get current time -> Hour
-            // alert(time_select);
-
-
             return (<div style={this.style_base}>
                         <div onClick={this.handleOn_Cancel_TouchEnd} style={this.button_style_base}>
-                            <span style={this.button_style_text}>Submit Query<span style={this.button_style_fa}>&#xf055;</span></span>
+                            <span style={this.button_style_text}>Cancel Query<span style={this.button_style_fa}>&#xf057;</span></span>
                         </div>
+
+                        <div style={this.style_group}>{this.state.status}</div>
+
+                        <div style={this.style_group_2}>(May take a time)</div>
                 
                 </div>);
     }
