@@ -38,17 +38,17 @@ module.exports = React.createClass({
         
         //~ Null Port
         if(this.props.server_data.server_port === null) {
-			var ping = $.ajax({
-				url: "https://" + this.props.server_data.server_url + "/heartbeat",
-			});
-		}
-		
-		else {
-			var ping = $.ajax({
-				url: "https://" + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
-			});
-		}
-		
+            var ping = $.ajax({
+                url: "https://" + this.props.server_data.server_url + "/heartbeat",
+            });
+        }
+        
+        else {
+            var ping = $.ajax({
+                url: "https://" + this.props.server_data.server_url + ":" + this.props.server_data.server_port + "/heartbeat",
+            });
+        }
+        
         ping.done(function( msg ) {
             Server_Actions.statusUpdate(server_id, true);
             
@@ -262,99 +262,127 @@ module.exports = React.createClass({
         'float':'left'
     },
 
-    handleTouchEnd: function(event) {
-        // Not Expanded
-        if(this.state.expanded === false) { 
-            this.setState({
-                expanded: true
-            });
-            
-            var self = this;
-			var tween = new TWEEN.Tween( { height : 45 })
-				.to( { height : this.state.expanded_height }, 500 )
-                .easing( TWEEN.Easing.Linear.None )
-                .onUpdate( function () {
-					var updatedStyle = _.clone(self.state.style_base);
-					
-					updatedStyle.height = this.height;
-									
-                    self.setState({
-						style_base: updatedStyle
-					});
-                });
-
-                tween.start();
-
-                animate();
-        }
-
-		// Is Expanded
-        else {
-            this.setState({
-                expanded: false
-            });
-                var self = this;
-                var tween = new TWEEN.Tween( { height : this.state.expanded_height })
-					.to( { height : 45 }, 500 )
-                    .easing( TWEEN.Easing.Linear.None )
-                    .onUpdate( function () {
-						
-						var updatedStyle = _.clone(self.state.style_base);
-
-                        updatedStyle.height = this.height;
-
-                        self.setState({
-							style_base: updatedStyle
-						});
-				});
-
-                tween.start();
-
-                animate();
-        }
+    toggleExpandCollapse: function() {
+        if (this.state.expanded)
+            this.collapse();
+        else
+            this.expand();
     },
 
-    handle_Connect_TouchEnd: function(evt) {
+    collapse: function() {
+        this.setState({
+            expanded: false
+        });
+        var self = this;
+        var tween = new TWEEN.Tween( { height : this.state.expanded_height })
+            .to( { height : 45 }, 500 )
+            .easing( TWEEN.Easing.Linear.None )
+            .onUpdate( function () {
+
+                var updatedStyle = _.clone(self.state.style_base);
+
+                updatedStyle.height = this.height;
+
+                self.setState({
+                    style_base: updatedStyle
+                });
+            });
+
+        tween.start();
+        animate();
+    },
+
+    expand: function() {
+        this.setState({
+            expanded: true
+        });
+
+        var self = this;
+        var tween = new TWEEN.Tween( { height : 45 })
+            .to( { height : this.state.expanded_height }, 500 )
+            .easing( TWEEN.Easing.Linear.None )
+            .onUpdate( function () {
+                var updatedStyle = _.clone(self.state.style_base);
+
+                updatedStyle.height = this.height;
+
+                self.setState({
+                    style_base: updatedStyle
+                });
+            });
+
+        tween.start();
+        animate();
+    },
+
+    handleClick: function(event) {
+        //console.log("Click", event);
+        this.toggleExpandCollapse();
+    },
+
+    handleTouchEnd: function(event) {
+        this.toggleExpandCollapse();
+    },
+
+    connect: function() {
         Shell_Actions.loadRegions(this.props.server_data.server_url, this.props.server_data.server_port);
     },
 
+    handle_Connect_Click: function(evt) {
+        evt.stopPropagation();
+        this.connect()
+    },
+
+    handle_Connect_TouchEnd: function(evt) {
+        this.connect()
+    },
+
+    edit: function() {
+        Shell_Actions.loadEditServer("up",{"server_url" : this.props.server_data.server_url,
+            "server_port" : this.props.server_data.server_port,
+            "server_id" : this.props.server_data.server_id,
+            "server_name" : this.props.server_data.server_name});
+    },
+
+    handle_Edit_Click: function(evt) {
+        evt.stopPropagation();
+        this.edit();
+    },
+
     handle_Edit_TouchEnd: function(evt) {
-        Shell_Actions.loadEditServer("up",{"server_url" : this.props.server_data.server_url, 
-                                            "server_port" : this.props.server_data.server_port, 
-                                            "server_id" : this.props.server_data.server_id,
-                                            "server_name" : this.props.server_data.server_name});
+        this.edit();
     },
         
     render: function() {     
         var style = this.style_base;
 
-        return (<li style={this.state.style_base} onTouchEnd={this.handleTouchEnd}>
+        return (<li style={this.state.style_base} onTouchEnd={this.handleTouchEnd} onClick={this.handleClick}>
 
-					<div style = {this.style_icon}>&#xf233;</div>
-						<div style={this.style_title}>{this.props.server_data.server_name} : { this.props.server_data.online == true ? "Online" : "Offline"}  
-					</div>
+                    <div style = {this.style_icon}>&#xf233;</div>
+                        <div style={this.style_title}>{this.props.server_data.server_name} : { this.props.server_data.online == true ? "Online" : "Offline"}  
+                    </div>
 
-					<ReactCSSTransitionGroup transitionName="example">                
-						{this.state.expanded === true ?
-							<div style={this.style_info}>
-								<ul style={this.style_info_list}>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Name:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_name}</div></li>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server ID:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_id}</div></li>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server URL:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_url}</div></li>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Port:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_port}</div></li>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Status:</div><div style={this.style_info_list_item_data}> {this.state.server_state}</div></li>
-									<li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Region Count:</div><div style={this.style_info_list_item_data}> {this.state.region_count}</div></li>
-								</ul>
-						</div> : null } 
-					</ReactCSSTransitionGroup>     
-					  
-					<ReactCSSTransitionGroup transitionName="example">
-						{this.state.expanded === true ?
-							<div style={this.style_button_group}>
-								<div onTouchEnd={this.handle_Edit_TouchEnd} style={this.style_button_edit}><span style={this.style_fa_button}>&#xf040;</span>Edit</div>
-								<div onTouchEnd={this.handle_Connect_TouchEnd} style={this.style_button_connect}>Connect<span style={this.style_fa_button}>&#xf045;</span></div>
-							</div> : null } 
-					</ReactCSSTransitionGroup>                  
-				</li>);
+                    <ReactCSSTransitionGroup transitionName="example">                
+                        {this.state.expanded ?
+                            <div style={this.style_info}>
+                                <ul style={this.style_info_list}>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Name:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_name}</div></li>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server ID:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_id}</div></li>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server URL:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_url}</div></li>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Port:</div><div style={this.style_info_list_item_data}> {this.props.server_data.server_port}</div></li>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Server Status:</div><div style={this.style_info_list_item_data}> {this.state.server_state}</div></li>
+                                    <li style={this.style_info_list_item}><div style={this.style_info_list_item_title}>Region Count:</div><div style={this.style_info_list_item_data}> {this.state.region_count}</div></li>
+                                </ul>
+                        </div> : null } 
+                    </ReactCSSTransitionGroup>     
+                      
+                    <ReactCSSTransitionGroup transitionName="example">
+                        {this.state.expanded ?
+                            <div style={this.style_button_group}>
+                                <div onTouchEnd={this.handle_Edit_TouchEnd} onClick={this.handle_Edit_Click} style={this.style_button_edit}><span style={this.style_fa_button}>&#xf040;</span>Edit</div>
+                                <div onTouchEnd={this.handle_Connect_TouchEnd} onClick={this.handle_Connect_Click} style={this.style_button_connect}>Connect<span style={this.style_fa_button}>&#xf045;</span></div>
+                            </div> : null } 
+                    </ReactCSSTransitionGroup>                  
+                </li>);
     }
 });
