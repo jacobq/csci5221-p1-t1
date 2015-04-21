@@ -91,18 +91,17 @@ module.exports = React.createClass({
         'WebkitAnimationDuration': '1.0s',
         'animationDuration': '1.0s',
         'WebkitAnimationFillMode': 'both',
-        'animationFillMode': 'both',
+        'animationFillMode': 'both'
     },
 
     style_button_group: {
         'height':35,
         'width':'100%',
-        
-        
+
         'background' : 'rgba(255,25,255,1.0)',
 
         'margin':0,
-        'padding':0,
+        'padding':0
     },
 
     style_button_edit: {
@@ -116,9 +115,7 @@ module.exports = React.createClass({
         'float':'left',
         'margin':0,
         'padding':0,
-        'paddingTop':5,
-
-
+        'paddingTop':5
     },
 
     style_button_connect: {
@@ -134,9 +131,7 @@ module.exports = React.createClass({
         'float':'right',
         'margin':0,
         'padding':0,
-        'paddingTop':5,
-        
-
+        'paddingTop':5
     },
 
     style_online: {
@@ -149,7 +144,7 @@ module.exports = React.createClass({
         'textAlign' : 'center',
         'fontFamily': '"Arial Black", Gadget, sans-serif',
         'borderTop': 'solid 1px rgba(33,33,33,1.0)',
-        'borderBottom': 'solid 1px rgba(33,33,33,1.0)',
+        'borderBottom': 'solid 1px rgba(33,33,33,1.0)'
     },
 
     style_offline: {
@@ -162,7 +157,7 @@ module.exports = React.createClass({
         'textAlign' : 'center',
         'fontFamily': '"Arial Black", Gadget, sans-serif',
         'borderTop': 'solid 1px rgba(33,33,33,1.0)',
-        'borderBottom': 'solid 1px rgba(33,33,33,1.0)',
+        'borderBottom': 'solid 1px rgba(33,33,33,1.0)'
     },
 
     style_icon: {
@@ -175,7 +170,7 @@ module.exports = React.createClass({
         'padding': 0,
         'paddingTop' : 10,
         'fontFamily':'FontAwesome',
-        'fontSize': '2em',
+        'fontSize': '2em'
     },
 
     style_fa: {
@@ -185,7 +180,7 @@ module.exports = React.createClass({
         'fontSize': '2em',
 
         'marginLeft': 5,
-        'marginRight': 5,
+        'marginRight': 5
     },
 
     style_fa_button: {
@@ -197,25 +192,21 @@ module.exports = React.createClass({
 
         'marginLeft': 5,
         'marginRight': 5,
-        'top':'2px',
+        'top':'2px'
     },
 
     style_title: {
-
-        
         'height': 37,
         'width': '100%',
         'margin': 0,
         'padding': 0,
         'paddingTop':8,
         'fontFamily': '"Arial Black", Gadget, sans-serif',
-        'fontSize': '1.5em',
+        'fontSize': '1.5em'
         // 'background' : 'rgba(2,25,250,1.0)',
     },
 
     style_info: {
-
-        
         'height': 175,
         'width': '100%',
         'margin': 0,
@@ -224,31 +215,26 @@ module.exports = React.createClass({
         
         'fontFamily': '"Arial Black", Gadget, sans-serif',
         'fontSize': '1.5em',
-        'background' : 'rgba(87,116,131,1.0)',
+        'background' : 'rgba(87,116,131,1.0)'
     },
 
     style_info_list: {
-
-        
         'height': '100%',
         'width': '92%',
         'margin': 0,
         'padding': 0,
 
         'marginLeft':'4%',
-        
-        
+
         'fontFamily': '"Arial Black", Gadget, sans-serif',
         'fontSize': '0.65em',
         // 'background' : 'rgba(2,25,5,1.0)',
         'listStyle':'none',
         'display':'block',
-        'float':'left',
+        'float':'left'
     },
 
     style_info_list_item: {
-
-        
         'height': 28,
         'width': '100%',
         'margin': 0,
@@ -256,39 +242,35 @@ module.exports = React.createClass({
         
         // 'background' : 'rgba(255,25,5,1.0)',
         
-        'display':'block',
+        'display':'block'
     },
 
     style_info_list_item_title: {
-
-        
         'height': 25,
         'margin': 0,
         'padding': 0,
 
-        'float':'left',
+        'float':'left'
     },
 
     style_info_list_item_data: {
-
-        
         'height': 25,
         'margin': 0,
         'padding': 0,
         'marginLeft':5,
         
-        'float':'left',
+        'float':'left'
     },
 
     handleTouchEnd: function(event) {
         // Not Expanded
         if(this.state.expanded === false) { 
             this.setState({
-                expanded: true,
-            })
+                expanded: true
+            });
             
             var self = this;
-			var tween = new TWEEN.Tween( { height : 45, })
+			var tween = new TWEEN.Tween( { height : 45 })
 				.to( { height : this.state.expanded_height }, 500 )
                 .easing( TWEEN.Easing.Linear.None )
                 .onUpdate( function () {
@@ -309,8 +291,8 @@ module.exports = React.createClass({
 		// Is Expanded
         else {
             this.setState({
-                expanded: false,
-            })
+                expanded: false
+            });
                 var self = this;
                 var tween = new TWEEN.Tween( { height : this.state.expanded_height })
 					.to( { height : 45 }, 500 )

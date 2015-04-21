@@ -8,17 +8,15 @@ module.exports = Reflux.createStore({
     // Initial setup
     init: function() {
         this.listenTo(Regions_Actions.updateRegionList, this.updateRegionList);
-
         this.listenTo(Regions_Actions.requestRegionList, this.requestRegionList);
     },
 
     updateRegionList: function(region_list){
         this.region_list = region_list;
-
         this.trigger(this.region_list);
     },
 
     requestRegionList: function(){
         this.trigger(this.region_list);
-    },
+    }
 });

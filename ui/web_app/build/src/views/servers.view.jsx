@@ -45,7 +45,5 @@ module.exports = React.createClass({
                 <Add_Server_Button_View />
 
                 </div>);
-
-
     }
 });

@@ -1,15 +1,10 @@
 var Reflux = require('reflux');
-
 var Shell_Actions = require('../actions/shell.actions.js');
-
 var Regions_Actions = require('../actions/regions.actions.js');
-
 var WebSocket_Actions = require('../actions/websocket.actions.js');
-
 var ws = require('../ws.js');
 
 module.exports = Reflux.createStore({
-
     // Initial setup
     init: function() {
 
@@ -61,7 +56,6 @@ module.exports = Reflux.createStore({
         // Replace with client ident/mac and other bootstraping
         // authent
         ws.state = 'open';
-    
         ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));
     },
 
@@ -69,10 +63,9 @@ module.exports = Reflux.createStore({
     wsOnError: function(ev) {
         // Replace with client ident/mac and other bootstraping
         // authent
-        
-        alert("error");
+
+        alert("error (unimplemented)");
         //~ ws.state = 'error';
-   
     },
     wsOnClose: function() {
         ws.state = 'closed';
@@ -150,7 +143,5 @@ module.exports = Reflux.createStore({
 
     loadRegionDashboard_View: function(trans) {
         this.trigger({"msg_type" : "change_page", "msg" : {"page" : "region_dashboard", "slide_dir" : trans, "page_data": {'region_id' : this.region_id, 'sensor_count': this.sensor_count, 'spatial_data': this.shape}}});
-    },
-
-    
+    }
 });

@@ -37,8 +37,6 @@ module.exports = React.createClass({
 
         Server_Actions.request();
 
-        
-
         Server_Actions.register({'server_id' : 'test_1', 'server_name' : 'Localhost', 'server_url' : 'localhost' ,'server_port' : null})
         Server_Actions.register({'server_id' : 'test_2', 'server_name' : 'CSCI5221', 'server_url' : 'csci5221.web-controllable.com' ,'server_port' : null})
         // Server_Actions.register({'server_id' : 'test_2', 'server_name' : 'Locnnalhost', 'server_url' : '127.0.0.1', 'server_port': 8888})
@@ -61,7 +59,7 @@ module.exports = React.createClass({
         'overflowY': 'scroll',
         'borderTop': 'solid 1px rgba(33,33,33,1.0)',
         'borderBottom': 'solid 1px rgba(33,33,33,1.0)',
-        'listStyle' : 'none',
+        'listStyle' : 'none'
     },
         
     render: function() {            

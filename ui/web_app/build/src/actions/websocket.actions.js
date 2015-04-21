@@ -5,5 +5,5 @@ module.exports = Reflux.createActions([
     "error",
     "message",
     "close",
-    "stream_data_recieve",
+    "stream_data_recieve"
   ]);
