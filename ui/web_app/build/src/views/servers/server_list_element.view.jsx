@@ -22,6 +22,8 @@ var Server_Store = require('../../stores/servers.store.js');
 
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
 
+var debouncing = false;
+
 function animate( time ) {
     requestAnimationFrame( animate );
     TWEEN.update( time );
@@ -263,10 +265,16 @@ module.exports = React.createClass({
     },
 
     toggleExpandCollapse: function() {
-        if (this.state.expanded)
-            this.collapse();
-        else
-            this.expand();
+        if (!debouncing) {
+            debouncing = true;
+            if (this.state.expanded)
+                this.collapse();
+            else
+                this.expand();
+            window.setTimeout(function() {
+                debouncing = false;
+            }, 10);
+        }
     },
 
     collapse: function() {
