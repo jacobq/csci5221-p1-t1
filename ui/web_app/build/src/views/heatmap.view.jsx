@@ -41,7 +41,7 @@ var Heatmap = React.createClass({
     },
 
     componentDidMount: function() {
-        Debug("componentDidMount");
+        //Debug("componentDidMount");
     },
 
     componentWillUnmount: function() {
@@ -76,6 +76,7 @@ var Heatmap = React.createClass({
             trans = "slideVD";
         }
 
+        // FIXME: this.props vs. this.state --> confusing
         return (<div style={this.style_base}>
                     <ReactCSSTransitionGroup transitionName={trans}>
                         { this.state.current_page == 'heatmap_query' ? <Heatmap_Query_View page_data={this.props.page_data}/> : null }
@@ -86,7 +87,7 @@ var Heatmap = React.createClass({
                     </ReactCSSTransitionGroup>
 
                     <ReactCSSTransitionGroup transitionName={trans}>
-                        { this.state.current_page == 'heatmap_response' ? <Heatmap_Response_View page_data={this.props.page_data}/> : null }
+                        { this.state.current_page == 'heatmap_response' ? <Heatmap_Response_View page_data={this.state.page_data}/> : null }
                     </ReactCSSTransitionGroup>
                 </div>);
     }

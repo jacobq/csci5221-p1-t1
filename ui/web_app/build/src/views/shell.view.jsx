@@ -43,21 +43,15 @@ var Shell = React.createClass({
     
     onStatusChange: function(data) {
 
-        if(data.msg_type == "change_page") {
+        if( data.msg_type === "change_page" ||
+            data.msg_type === "change_page_edit"
+            // heatmap_change_page is handled in heatmap.view.jsx
+        ) {
             this.setState({
                 slide_dir: data.msg.slide_dir,
                 current_page: data.msg.page,
                 page_data: data.msg.page_data
             });
-        }
-
-        else if(data.msg_type == "change_page_edit"){
-            this.setState({
-                slide_dir: data.msg.slide_dir,
-                current_page: data.msg.page,
-                page_data: data.msg.page_data
-
-            })
         }
     },
 

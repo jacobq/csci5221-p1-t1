@@ -8,48 +8,14 @@ var React = require('react/addons');
 var Reflux = require('reflux');
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
-
-var moment = require('moment')
-
 var Debug = require('debug')('Regions:View');
-
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
-
 var Shell_Actions = require('../../actions/shell.actions.js');
-
 var Submit_Heatmap_Button_View = require('./submit_heatmap_button.view.jsx');
-
 var ws = require('../../ws.js');
 
 module.exports = React.createClass({
     mixins: [Reflux.ListenerMixin],
-
-    getInitialState: function() {
-        return {};
-    },
-
-    wsOnMessage: function(evt) {
-        msg = JSON.parse(evt.data);
-        
-        if(msg.message_type == "heatmap_bounds_Response") {
-            this.setState({
-                heatmap_bounds: msg.heatmap_bounds
-            });
-        }
-    },
-
-    componentWillMount: function() {
-        // this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
-        // Need to get start/end dates and time lists
-    },
-    
-    componentDidMount: function() {
-        // ws.socket.send(JSON.stringify({'message_type':'heatmap_bounds', 'region_id' : 1}));
-        // Need to get start/end dates and time lists
-    },
-
-    componentWillUnmount: function() {
-    },
 
     style_base: {
         'height' : '100%',
@@ -128,55 +94,6 @@ module.exports = React.createClass({
 
     },
 
-   
-
-    selectedStartDate: function(evt){
-        this.setState({
-                startDate: evt.target.value,
-                startTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
-    },
-
-    selectedStartTime: function(evt){
-        this.setState({
-                startTime: evt.target.value,
-            });
-    },
-
-    selectedEndDate: function(evt){
-        this.setState({
-                endDate: evt.target.value,
-                endTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
-    },
-
-    selectedEndTime: function(evt){
-        this.setState({
-                endTime: evt.target.value,
-            });
-    },
-
-    selected_xMin: function(evt){
-        this.setState({
-                xMin: evt.target.value,
-            });
-    },
-    selected_xMax: function(evt){
-        this.setState({
-                xMax: evt.target.value,
-            });
-    },
-    selected_yMin: function(evt){
-        this.setState({
-                yMin: evt.target.value,
-            });
-    },
-    selected_yMax: function(evt){
-        this.setState({
-                yMax: evt.target.value,
-            });
-    },
-
     handleOn_Done_TouchEnd: function(evt){
         Shell_Actions.loadRegionDashboard_View('down');
     },
@@ -187,11 +104,8 @@ module.exports = React.createClass({
                         <div onClick={this.handleOn_Done_TouchEnd} style={this.button_style_base}>
                             <span style={this.button_style_text}>Done</span>
                         </div>
-
-                         <video style={this.style_group} src="https://csci5221.web-controllable.com/static/video/movie.mp4" width="320" height="240" controls>
-                            
-                        </video> 
-
+                        <video style={this.style_group} src={this.props.page_data.heatmap_url} width="320" height="240" controls>
+                        </video>
                 </div>);
     }
 });

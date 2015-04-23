@@ -28,7 +28,6 @@ module.exports = React.createClass({
     },
     
     componentDidMount: function() {
-        Debug("componentDidMount");
     },
 
     componentWillUnmount: function() {

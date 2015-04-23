@@ -256,7 +256,7 @@ module.exports = React.createClass({
     },
 
     handleOn_Submit_TouchEnd: function(evt){
-        Shell_Actions.loadHeatmapProcessing("test");
+        Shell_Actions.loadHeatmapProcessing();
         ws.socket.send(JSON.stringify({'message_type':'heatmap_query'}));
     },
 

@@ -6,19 +6,11 @@
 
 var React = require('react/addons');
 var Reflux = require('reflux');
-
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
-
-var moment = require('moment')
-
 var Debug = require('debug')('Regions:View');
-
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
-
 var Shell_Actions = require('../../actions/shell.actions.js');
-
 var Submit_Heatmap_Button_View = require('./submit_heatmap_button.view.jsx');
-
 var ws = require('../../ws.js');
 
 module.exports = React.createClass({
@@ -32,6 +24,7 @@ module.exports = React.createClass({
         msg = JSON.parse(evt.data);
 
         if(msg.message_type == "heatmap_response") {
+            //console.log("Got response", msg);
             Shell_Actions.loadHeatmapResponse(msg.url);
         }
         
@@ -44,18 +37,9 @@ module.exports = React.createClass({
 
     componentWillMount: function() {
         this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
-        
-        // Need to get start/end dates and time lists
     },
     
     componentDidMount: function() {
-        Debug("componentDidMount");
-
-        // ws.socket.send(JSON.stringify({'message_type':'heatmap_bounds', 'region_id' : 1}));
-
-        
-
-        // Need to get start/end dates and time lists
     },
 
     componentWillUnmount: function() {

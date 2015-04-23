@@ -56,7 +56,13 @@ module.exports = Reflux.createStore({
         // Replace with client ident/mac and other bootstraping
         // authent
         ws.state = 'open';
-        ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));
+
+        // Uncaught InvalidStateError: Failed to execute 'send' on 'WebSocket': Still in CONNECTING state.
+        try {
+            ws.socket.send(JSON.stringify({'message_type':'getRegionList'}));
+        } catch (e) {
+            console.warn("Failed to send getRegionList: caught exception: ", e);
+        }
     },
 
 
@@ -130,11 +136,11 @@ module.exports = Reflux.createStore({
     },
 
     loadHeatmapResponse: function(url) {
-        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_response", "slide_dir" : "left", "page_data": {'heatmap_url':url}}});
+        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_response", "slide_dir" : "left", "page_data": {'heatmap_url': url}}});
     },
 
     loadHeatmapProcessing: function(status) {
-        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_processing", "slide_dir" : "left", "page_data": {'stauts': status}}});
+        this.trigger({"msg_type" : "heatmap_change_page", "msg" : {"page" : "heatmap_processing", "slide_dir" : "left", "page_data": {'status': status}}});
     },
 
     loadRegions_View: function(trans) {
