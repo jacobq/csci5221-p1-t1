@@ -1,6 +1,7 @@
 # This module is the core of the application. It connects to MongoDB, creates an HTTP(S) server, and sets up Tornado
 
 import os
+import ssl
 import sys
 import logging
 import datetime
@@ -34,18 +35,10 @@ def create_server(application):
 	# In case of error (e.g. unreadable private key) then use unencrypted HTTP on the httpPort
 	settings["port"] = settings["httpsPort"]
 	try:
-		# Python 3.x way:
-		#ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-		#ssl_ctx.load_cert_chain(os.path.join(settings["certificate_path"], "csci5221.webcontrollable.com.crt"),
-		#						os.path.join(settings["certificate_path"], "csci5221.webcontrollable.com.private.key"))
-		#server = httpserver.HTTPServer(application, ssl_options=ssl_ctx)
-
-		# Python 2.x way:
-		server = httpserver.HTTPServer(application, ssl_options={
-			"certfile": os.path.realpath(os.path.join(settings["certificate_path"], "csci5221.webcontrollable.com.crt")),
-			"keyfile": os.path.realpath(os.path.join(settings["certificate_path"], "csci5221.webcontrollable.com.private.key")),
-			"ca_certs": os.path.realpath(os.path.join(settings["certificate_path"], "ca_certs"))
-		})
+		ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+		ssl_ctx.load_cert_chain(os.path.join(settings["certificate_path"], "csci5221.webcontrollable.com.crt.bundle"))
+		ssl_ctx.set_ciphers("ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK");
+		server = httpserver.HTTPServer(application, ssl_options=ssl_ctx)
 	except ValueError:
 		logging.warning("Failed to set up HTTPS server. Will try plain-old HTTP instead now.")
 		settings["port"] = settings["httpPort"]
