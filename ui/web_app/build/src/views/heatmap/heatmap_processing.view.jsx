@@ -168,7 +168,7 @@ module.exports = React.createClass({
 
                         <div style={this.style_group}>{this.state.status}</div>
 
-                        <div style={this.style_group_2}>(May take a time)</div>
+                        <div style={this.style_group_2}>Please wait</div>
                 
                 </div>);
     }

@@ -25,55 +25,7 @@ module.exports = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
-
-        // Build Time Selection
-        var time_select = []
-
-        var d = new Date();
-        var current_hour = d.getHours();
-        var x = 1;
-
-        for(x = 1; x < 11; x++) {
-            time_select.push(current_hour-x + ":30");
-            time_select.push(current_hour-x + ":00");
-        }
-
-        var x_min = this.props.page_data.spatial_data.vertices[0].x;
-        var y_min = this.props.page_data.spatial_data.vertices[0].y;
-
-        var x_max = this.props.page_data.spatial_data.vertices[1].x;
-        var y_max = this.props.page_data.spatial_data.vertices[1].y;
-
-        var delta = 10;
-        var x_delta = (x_max - x_min)/delta;
-        var y_delta = (y_max - y_min)/delta;
-
-        var x_array = []
-        var y_array = []
-        var i = 0;
-
-        for(i = x_min; i <= x_max; i+=x_delta){
-            x_array.push(i);
-        }
-
-        for(i = y_min; i <= y_max; i+=y_delta){
-            y_array.push(i);
-        }
-        
-        // alert(x_array);
-        // alert(y_array);
-
-        return { startDate: null,
-                    startTime: null,
-                    startTimes: time_select,
-                    endDate: null,
-                    endTime: null,
-                    endTimes: time_select,
-                    xMin: null,
-                    xMax: null,
-                    yMin: null,
-                    yMax: null,
-                    heatmap_bounds: {'date' : [], 'time': [], 'x': x_array, 'y': y_array}, 'start_date_entered' : false, 'end_date_entered' : false};
+        return {};
     },
 
     wsOnMessage: function(evt) {
@@ -87,19 +39,12 @@ module.exports = React.createClass({
     },
 
     componentWillMount: function() {
-
         // this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
-        
         // Need to get start/end dates and time lists
     },
     
     componentDidMount: function() {
-        Debug("componentDidMount");
-
         // ws.socket.send(JSON.stringify({'message_type':'heatmap_bounds', 'region_id' : 1}));
-
-        
-
         // Need to get start/end dates and time lists
     },
 
