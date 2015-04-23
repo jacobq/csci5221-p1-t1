@@ -25,17 +25,31 @@ module.exports = React.createClass({
     mixins: [Reflux.ListenerMixin],
 
     getInitialState: function() {
+        // For date selection, just list the last 7 days
+        var dates = (function lastNDays(days){
+            function getFormattedDate(d) {
+                return d.toISOString().replace(/T.+$/, "");
+            }
+
+            var dates = [];
+            var d = new Date();
+            d.setDate(d.getDate() - days);
+            for (var i=0; i < days; i++) {
+                dates.push({
+                    key: getFormattedDate(d),
+                    value: d
+                });
+                d.setDate(d.getDate() + 1);
+            }
+            return dates;
+        }(7));
+
 
         // Build Time Selection
-        var time_select = []
-
-        var d = new Date();
-        var current_hour = d.getHours();
-        var x = 1;
-
-        for(x = 1; x < 11; x++) {
-            time_select.push(current_hour-x + ":30");
-            time_select.push(current_hour-x + ":00");
+        var time_select = [];
+        for(var hour = 0; hour < 24; hour++) {
+            time_select.push(hour + ":00");
+            time_select.push(hour + ":30");
         }
 
         var x_min = this.props.page_data.spatial_data.vertices[0].x;
@@ -44,36 +58,51 @@ module.exports = React.createClass({
         var x_max = this.props.page_data.spatial_data.vertices[1].x;
         var y_max = this.props.page_data.spatial_data.vertices[1].y;
 
+        // Need to round often since in JS' floating point:
+        // 1.6 + 1.6 + 1.6 = 4.800000000000001 !
+        function round(x, places) {
+            places = (typeof places === "number") ? places : 2;
+            var exp = Math.pow(10, places);
+            return Math.round(exp*x)/exp;
+        }
         var delta = 10;
-        var x_delta = (x_max - x_min)/delta;
-        var y_delta = (y_max - y_min)/delta;
+        var x_delta = round((x_max - x_min)/delta);
+        var y_delta = round((y_max - y_min)/delta);
 
-        var x_array = []
-        var y_array = []
-        var i = 0;
+        var x_array = [];
+        var y_array = [];
+        var i;
 
         for(i = x_min; i <= x_max; i+=x_delta){
-            x_array.push(i);
+            x_array.push(round(i));
         }
 
         for(i = y_min; i <= y_max; i+=y_delta){
-            y_array.push(i);
+            y_array.push(round(i));
         }
-        
-        // alert(x_array);
-        // alert(y_array);
 
-        return { startDate: null,
-                    startTime: null,
-                    startTimes: time_select,
-                    endDate: null,
-                    endTime: null,
-                    endTimes: time_select,
-                    xMin: null,
-                    xMax: null,
-                    yMin: null,
-                    yMax: null,
-                    heatmap_bounds: {'date' : [], 'time': [], 'x': x_array, 'y': y_array}, 'start_date_entered' : false, 'end_date_entered' : false};
+        return {
+            startDate: null,
+            startDates: dates,
+            startTime: null,
+            startTimes: time_select,
+            endDate: null,
+            endDates: dates,
+            endTime: null,
+            endTimes: time_select,
+            xMin: null,
+            xMax: null,
+            yMin: null,
+            yMax: null,
+            heatmap_bounds: {
+                'date': [],
+                'time': [],
+                'x': x_array,
+                'y': y_array
+            },
+            'start_date_entered' : false,
+            'end_date_entered' : false
+        };
     },
 
     wsOnMessage: function(evt) {
@@ -87,9 +116,7 @@ module.exports = React.createClass({
     },
 
     componentWillMount: function() {
-
         // this.listenTo(WebSocket_Actions.message, this.wsOnMessage);
-        
         // Need to get start/end dates and time lists
     },
     
@@ -98,7 +125,7 @@ module.exports = React.createClass({
 
         // ws.socket.send(JSON.stringify({'message_type':'heatmap_bounds', 'region_id' : 1}));
 
-        
+
 
         // Need to get start/end dates and time lists
     },
@@ -179,58 +206,53 @@ module.exports = React.createClass({
         
 
         'marginLeft': 5,
-        'marginRight': 5,
+        'marginRight': 5
 
     },
 
-   
-
     selectedStartDate: function(evt){
-        Debug(evt);
         this.setState({
-                startDate: evt.target.value,
-                startTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
+            startDate: evt.target.value
+        });
     },
 
     selectedStartTime: function(evt){
         this.setState({
-                startTime: evt.target.value,
-            });
+            startTime: evt.target.value
+        });
     },
 
     selectedEndDate: function(evt){
         this.setState({
-                endDate: evt.target.value,
-                endTimes: this.state.heatmap_bounds.time[evt.target.value]
-            });
+            endDate: evt.target.value
+        });
     },
 
     selectedEndTime: function(evt){
         this.setState({
-                endTime: evt.target.value,
-            });
+            endTime: evt.target.value
+        });
     },
 
     selected_xMin: function(evt){
         this.setState({
-                xMin: evt.target.value,
-            });
+            xMin: evt.target.value
+        });
     },
     selected_xMax: function(evt){
         this.setState({
-                xMax: evt.target.value,
-            });
+            xMax: evt.target.value
+        });
     },
     selected_yMin: function(evt){
         this.setState({
-                yMin: evt.target.value,
-            });
+            yMin: evt.target.value
+        });
     },
     selected_yMax: function(evt){
         this.setState({
-                yMax: evt.target.value,
-            });
+            yMax: evt.target.value
+        });
     },
 
     handleOn_Submit_TouchEnd: function(evt){
@@ -254,8 +276,8 @@ module.exports = React.createClass({
                         <div style={this.style_group}>
                             <select onChange={this.selectedStartDate} style={this.style_select_left} className="styled-select slate">
                                 {this.state.startDate != null ? <option style={this.style_select_null} selected="selected">{this.state.startDate}</option> : <option selected="selected">Start Date</option>}
-                                {this.state.heatmap_bounds.date.map(function(data) {
-                                    return <option value={data} >{data}</option>
+                                {this.state.startDates.map(function(data) {
+                                    return <option value={data.value} >{data.key}</option>
                                 })}
                             </select>
 
@@ -271,7 +293,7 @@ module.exports = React.createClass({
                         <div style={this.style_group}>
                             <select onChange={this.selectedEndDate} style={this.style_select_left} className="styled-select slate">
                                 {this.state.endDate != null ? <option style={this.style_select_null} selected="selected">{this.state.endDate}</option> : <option selected="selected">End Date</option>}
-                                {this.state.heatmap_bounds.date.map(function(data) {
+                                {this.state.endDates.map(function(data) {
                                     return <option>{data}</option>;
                                 })}
                             </select>
