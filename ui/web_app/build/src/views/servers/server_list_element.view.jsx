@@ -343,6 +343,7 @@ module.exports = React.createClass({
     },
 
     handle_Connect_TouchEnd: function(evt) {
+        evt.stopPropagation();
         this.connect()
     },
 
@@ -359,6 +360,7 @@ module.exports = React.createClass({
     },
 
     handle_Edit_TouchEnd: function(evt) {
+        evt.stopPropagation();
         this.edit();
     },
         
