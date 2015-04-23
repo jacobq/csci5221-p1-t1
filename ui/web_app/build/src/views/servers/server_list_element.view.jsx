@@ -23,6 +23,7 @@ var Server_Store = require('../../stores/servers.store.js');
 var WebSocket_Actions = require('../../actions/websocket.actions.js');
 
 var debouncing = false;
+var debounceTime = 100;
 
 function animate( time ) {
     requestAnimationFrame( animate );
@@ -273,7 +274,7 @@ module.exports = React.createClass({
                 this.expand();
             window.setTimeout(function() {
                 debouncing = false;
-            }, 10);
+            }, debounceTime);
         }
     },
 

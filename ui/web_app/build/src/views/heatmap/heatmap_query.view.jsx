@@ -186,6 +186,7 @@ module.exports = React.createClass({
    
 
     selectedStartDate: function(evt){
+        Debug(evt);
         this.setState({
                 startDate: evt.target.value,
                 startTimes: this.state.heatmap_bounds.time[evt.target.value]
